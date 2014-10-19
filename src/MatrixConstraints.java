@@ -1,15 +1,15 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 // This class takes a transition matrix and applies constraints on it,
 // it returns a transition matrix that is more constrained
 
 public class MatrixConstraints {
 	double[][] newMatrix;
-	private final int SLUTSYMBOL = 0;
-	private final int ALLA_SYMBOLER = 47;
+	private final int SLUTSYMBOL = 4;
+	private final int ALLA_SYMBOLER = 5;
 	
-	public MatrixConstraints(double[][] matrix) {
-		int maxDepth = 10; // Godtyckligt
+	public MatrixConstraints(double[][] matrix, int maxDepth) {
 		newMatrix = constrainMatrix(0, matrix, maxDepth);
 	}
 	
@@ -35,8 +35,8 @@ public class MatrixConstraints {
 			if(index == SLUTSYMBOL) {
 				return parent.getCurry();
 			}
+			return 0;
 		}
-		
 		double sum = 0d;
 		for(int i = 0; i < ALLA_SYMBOLER; i++) {
 			if(matrix[index][i] > 0) {
@@ -46,6 +46,22 @@ public class MatrixConstraints {
 		}
 
 		return sum;
+	}
+	
+	public static void main(String[] args) {
+		/*
+		 * Clay loves Mary Paul Today
+		 */
+		double[][] ts = new double[][]{
+				{0, 1, 0, 0, 0},
+				{0.25, 0, 0.5, 0.25, 0},
+				{0, 0.67, 0, 0, 0.33},
+				{0, 0, 0, 0, 1}
+		};
+		MatrixConstraints mc = new MatrixConstraints(ts, 4);
+		for(double[] d : mc.getConstrainedMatrix()) {
+			System.out.println(Arrays.toString(d));
+		}
 	}
 }
 
@@ -60,7 +76,11 @@ class TreeNode {
 		this.parent = parent;
 		this.wordType = wT;
 		this.probability = probability;
-		this.curry = probability * parent.getCurry();
+		if(parent != null) {
+			this.curry = probability * parent.getCurry();
+		} else {
+			this.curry = probability * 1;
+		}
 		
 		children = new ArrayList<TreeNode>();
 	}
