@@ -58,10 +58,20 @@ public class MatrixConstraints {
 				{0, 0.67, 0, 0, 0.33},
 				{0, 0, 0, 0, 1}
 		};
+		
+		double[][] correct = new double[][]{
+				{0, 1, 0, 0, 0},
+				{0, 0, 0.4, 0.6, 0},
+				{0, 0, 0, 0, 1},
+				{0, 0, 0, 0, 1}
+		};
+		
 		MatrixConstraints mc = new MatrixConstraints(ts, 4);
 		for(double[] d : mc.getConstrainedMatrix()) {
 			System.out.println(Arrays.toString(d));
 		}
+		
+		System.err.println("Constrained correctly? " + Arrays.deepEquals(mc.getConstrainedMatrix(), correct));
 	}
 }
 
