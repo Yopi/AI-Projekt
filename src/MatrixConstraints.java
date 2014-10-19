@@ -11,7 +11,7 @@ public class MatrixConstraints {
 	
 	public MatrixConstraints(double[][] matrix, int maxDepth) {
 		allWordClasses = matrix.length;
-		endWordClass = matrix.length-1;
+		endWordClass = 11;
 		newMatrix = new double[matrix.length][matrix[0].length];
 		constrainMatrix(0, matrix, maxDepth);
 	}
@@ -23,19 +23,11 @@ public class MatrixConstraints {
 	public void constrainMatrix(int startIndex, double[][] matrix, int maxDepth) {
 		TreeNode root = new TreeNode(null, startIndex, 1);
 		fillTree(root, startIndex, matrix, maxDepth-1);
+		System.out.println("Tree filled");
 		
 		// Calculate new probabilities
 		reestimateMatrix(root);
-		root.print("");
-		
-		// Normalize
-		/*prob = 1/prob;
-		for(int i = 0; i < matrix.length; i++) {
-			for(int j = 0; j < matrix[0].length; j++) {
-				matrix[i][j] = matrix[i][j] * prob;
-			}
-		}*/
-		
+		System.out.println("Matrix reestimated");
 	}
 	
 	public void reestimateMatrix(TreeNode current) {

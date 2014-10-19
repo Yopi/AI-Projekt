@@ -1,5 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
@@ -11,15 +14,19 @@ class TransitionMatrix {
 	
 	private double[]   initialSigns;
 	private double[][] transitionMatrix;
-
-	public static void main(String[] args) throws Exception { new TransitionMatrix(); }
+	private HashMap<String, ArrayList<String>> dictionary;
+	private String[] tags;
 	
-	public TransitionMatrix() throws Exception {
+	public static void main(String[] args) throws IOException { new TransitionMatrix(); }
+	
+	public TransitionMatrix() throws IOException {
 		MaxentTagger tagger = new MaxentTagger(taggerPath);
 		BufferedReader in = new BufferedReader(new FileReader(corpusPath));
 		int maxTags = tagger.numTags() + 1;
 		initialSigns = new double[maxTags];
 		double[][] tM = new double[maxTags][maxTags];			// Temporary transition matrix
+		tags = new String[maxTags];
+		dictionary = new HashMap<String, ArrayList<String>>();
 		
 		String line;
 		while ((line = in.readLine()) != null) {				// Read each line in corpus
@@ -29,11 +36,15 @@ class TransitionMatrix {
 				
 				String[] words = sentence.split("\\s");			// Split sentence into words
 				String[] tag = new String[words.length];
-				for (int i = 0; i < tag.length; i++)
-					try { tag[i] = words[i].split("_")[1]; }	// Get tag of each word
+				for (int i = 0; i < tag.length; i++) {
+					String[] word = words[i].split("_");
+					try { tag[i] = word[1]; }	// Get tag of each word
 					catch (Exception e) {
 						tag[i] = unknownTag;					// If word isn't tagged, put unknownTag
 					}
+					
+					addToDictionary(tag[i], word[0]);
+				}
 				
 				// Increase tag of first word in initialSigns array
 				int i = getTagIndex(tagger, tag[0]);
@@ -50,6 +61,12 @@ class TransitionMatrix {
 			}
 		}
 		in.close();
+		
+		// Create list of tags<>index
+		for(int i = 0; i < tagger.numTags(); i++) {
+			tags[i] = tagger.getTag(i);
+		}
+		tags[tagger.numTags()] = unknownTag;
 		
 		double[] c = new double[maxTags];
 		transitionMatrix = new double[maxTags][maxTags];		// Transition matrix with non-zero rows/columns
@@ -76,6 +93,14 @@ class TransitionMatrix {
 			}
 	}
 	
+	private void addToDictionary(String tag, String word) {
+		ArrayList<String> list = dictionary.get(tag);
+		if(list == null) list = new ArrayList<String>();
+		
+		list.add(word);
+		dictionary.put(tag, list);
+	}
+	
 	private static int getTagIndex(MaxentTagger t, String s) {
 		int i = t.getTagIndex(s);
 		if (i < 0)
@@ -89,6 +114,14 @@ class TransitionMatrix {
 	
 	public double[][] getMatrix() {
 		return transitionMatrix;
+	}
+	
+	public HashMap<String, ArrayList<String>> getDictionary() {
+		return dictionary;
+	}
+	
+	public String[] getTags() {
+		return tags;
 	}
 	
 	public void printTM() {
