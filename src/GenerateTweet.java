@@ -4,9 +4,10 @@ import java.util.HashMap;
 
 
 public class GenerateTweet {
-	private final static int tweetLength = 2;
+	private final static int tweetLength = 7;
 	
 	public static void main(String[] args) throws IOException {
+		long startTime = System.currentTimeMillis();
 		TransitionMatrix tm = new TransitionMatrix();
 		System.out.println("Created new TM");
 		MatrixConstraints constrainedTM = new MatrixConstraints(tm.getMatrix(), tweetLength);
@@ -23,7 +24,8 @@ public class GenerateTweet {
 		for(int i = 0; i < tweetLength; i++) {
 			
 		}
-		
+		long endTime = System.currentTimeMillis();
+		System.out.println("Time taken: " + (endTime - startTime) + "ms");
 		System.out.println(tweet.toString());
 		// Generate tweet with regular transitionmatrix
 		// Constrain transition matrix
