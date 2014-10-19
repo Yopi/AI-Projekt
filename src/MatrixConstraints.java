@@ -48,7 +48,7 @@ public class MatrixConstraints {
 			return 0;
 		} else if(maxDepth <= 0) {
 			return 1;
-		}
+		} 
 		
 		int sum = 0;
 		int value = 0;
