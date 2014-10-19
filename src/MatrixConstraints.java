@@ -6,46 +6,70 @@ import java.util.Arrays;
 
 public class MatrixConstraints {
 	double[][] newMatrix;
-	private final int SLUTSYMBOL = 4;
-	private final int ALLA_SYMBOLER = 5;
+	int allWordClasses;
+	int endWordClass;
 	
 	public MatrixConstraints(double[][] matrix, int maxDepth) {
-		newMatrix = constrainMatrix(0, matrix, maxDepth);
+		allWordClasses = matrix.length;
+		endWordClass = matrix.length-1;
+		newMatrix = new double[matrix.length][matrix[0].length];
+		constrainMatrix(0, matrix, maxDepth);
 	}
 	
 	public double[][] getConstrainedMatrix() {
 		return newMatrix;
 	}
 	
-	public double[][] constrainMatrix(int startIndex, double[][] matrix, int maxDepth) {
+	public void constrainMatrix(int startIndex, double[][] matrix, int maxDepth) {
 		TreeNode root = new TreeNode(null, startIndex, 1);
-		double prob = fillTree(root, startIndex, matrix, maxDepth-1);
-		prob = 1/prob;
+		fillTree(root, startIndex, matrix, maxDepth-1);
+		
+		// Calculate new probabilities
+		reestimateMatrix(root);
+		root.print("");
+		
+		// Normalize
+		/*prob = 1/prob;
 		for(int i = 0; i < matrix.length; i++) {
 			for(int j = 0; j < matrix[0].length; j++) {
 				matrix[i][j] = matrix[i][j] * prob;
 			}
-		}
+		}*/
 		
-		return matrix;
 	}
 	
-	public double fillTree(TreeNode parent, int index, double[][] matrix, int maxDepth) {		
-		if(maxDepth <= 0) {
-			if(index == SLUTSYMBOL) {
-				return parent.getCurry();
-			}
-			return 0;
+	public void reestimateMatrix(TreeNode current) {
+		double normalizer = 1/current.sumChildren();
+		for(TreeNode n : current.getChildren()) {
+			double n_newProb = (n.getProbability() + n.sumChildren()) * normalizer;
+			n.setProbability(n_newProb);
+			newMatrix[current.getWordType()][n.getWordType()] = n_newProb;
 		}
-		double sum = 0d;
-		for(int i = 0; i < ALLA_SYMBOLER; i++) {
+		
+		for(TreeNode c : current.getChildren()) {
+			reestimateMatrix(c);
+		}
+	}
+	
+	public int fillTree(TreeNode parent, int index, double[][] matrix, int maxDepth) {		
+		if(maxDepth <= 0 && index != endWordClass) {
+			return 0;
+		} else if(maxDepth <= 0) {
+			return 1;
+		}
+		
+		int sum = 0;
+		int value = 0;
+		for(int i = 0; i < allWordClasses; i++) {
 			if(matrix[index][i] > 0) {
 				TreeNode node = new TreeNode(parent, i, matrix[index][i]);
-				sum += fillTree(node, i, matrix, maxDepth-1);
+				value = fillTree(node, i, matrix, maxDepth-1);
+				if(value > 0) parent.addChild(node);
+				sum += value;
 			}
 		}
-
-		return sum;
+		
+		return (sum > 0) ? 1 : 0;
 	}
 	
 	public static void main(String[] args) {
@@ -56,22 +80,30 @@ public class MatrixConstraints {
 				{0, 1, 0, 0, 0},
 				{0.25, 0, 0.5, 0.25, 0},
 				{0, 0.67, 0, 0, 0.33},
-				{0, 0, 0, 0, 1}
-		};
-		
-		double[][] correct = new double[][]{
-				{0, 1, 0, 0, 0},
-				{0, 0, 0.4, 0.6, 0},
 				{0, 0, 0, 0, 1},
 				{0, 0, 0, 0, 1}
 		};
 		
-		MatrixConstraints mc = new MatrixConstraints(ts, 4);
+		
+		ts = new double[][] {
+			//	 0		1		2		3		4		5		6		7		8		9		10
+				{0, 	0.25,	0.75,	0,		0,		0,		0,		0,		0,		0,		0}, // 0
+				{0,		0,		0,		0.1,	0.9,	0,		0, 		0, 		0,		0,		0}, // 1
+				{0.2,	0,		0,		0,		0,		0.1,	0.5, 	0.2,	0,		0,		0}, // 2
+				{0,		0,		0,		0,		0.2,	0,		0,		0,		0.8,	0,		0}, // 3 
+				{0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0}, // 4 
+				{0,		0.5,	0,		0,		0,		0,		0,		0,		0.5,	0,		0}, // 5 
+				{0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0}, // 6 
+				{0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0}, // 7 
+				{0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1}, // 8 
+				{0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1}, // 9 
+				{0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1} // 10
+		};
+				
+		MatrixConstraints mc = new MatrixConstraints(ts, 5);
 		for(double[] d : mc.getConstrainedMatrix()) {
 			System.out.println(Arrays.toString(d));
 		}
-		
-		System.err.println("Constrained correctly? " + Arrays.deepEquals(mc.getConstrainedMatrix(), correct));
 	}
 }
 
@@ -80,26 +112,47 @@ class TreeNode {
 	ArrayList<TreeNode> children;
 	TreeNode parent;
 	double probability;
-	double curry; // Current probability (Product of probabilities until this part in tree)
 	int wordType;
 	public TreeNode(TreeNode parent, int wT, double probability) {
 		this.parent = parent;
 		this.wordType = wT;
 		this.probability = probability;
-		if(parent != null) {
-			this.curry = probability * parent.getCurry();
-		} else {
-			this.curry = probability * 1;
-		}
 		
 		children = new ArrayList<TreeNode>();
 	}
 
 	public TreeNode getParent() { return parent; }
 	public int getWordType() { return wordType;	}
-	public double getCurry() { return curry; }
+	public double getProbability() { return probability; }
+	public void setProbability(double newProb) { probability = newProb; } 
 	
-	public void newChild(TreeNode child) {
+	public void addChild(TreeNode child) {
 		children.add(child);
+	}
+	
+	public ArrayList<TreeNode> getChildren() {
+		return children;
+	}
+	
+	public double sumChildren() {
+		return sum() - this.probability;
+	}
+	public double sum() {
+		double sum = this.probability;
+		for(TreeNode n : children) {
+			sum += n.sum();
+		}
+		
+		return sum;
+	}
+	
+	public void print(String extra) {
+		System.out.println(extra + this.wordType + "(" + this.probability + ")");
+		
+		extra = extra + " > ";
+		for(TreeNode n : children) {
+			n.print(extra);
+		}
+	
 	}
 }
