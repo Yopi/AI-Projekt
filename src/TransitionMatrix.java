@@ -9,11 +9,13 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 class TransitionMatrix {
 	private final String taggerPath	  = "data/models/english-left3words-distsim.tagger";
 	private final String corpusPath	  = "data/corpus/cb.txt";
+	private final String terminalSign = "[.?!]";
 	
 	private double[]   initialSigns;
 	private double[][] transitionMatrix;
 	private HashMap<String, ArrayList<String>> dictionary;
 	private String[] tags;
+	private int terminalTagIndex;
 	
 	public static void main(String[] args) throws IOException { 
 		new TransitionMatrix(); 
@@ -21,49 +23,68 @@ class TransitionMatrix {
 	
 	public TransitionMatrix() throws IOException {
 		MaxentTagger tagger = new MaxentTagger(taggerPath);
+		terminalTagIndex = tagger.getTagIndex(".");
 		
 		initialSigns = new double[tagger.numTags()];
 		
 		// Create
-		transitionMatrix = makeTransitionMatrix(tagger);
-		dictionary = mapWords(tagger);
-		tags = fillTags(tagger);
+		fillTransitionMatrix(tagger);
+		//mapWords(tagger);
+		fillTags(tagger);
 		
 		// Normalize
-		transitionMatrix = normalizeMatrix(transitionMatrix);
-		initialSigns = normalizeArray(initialSigns);
+		normalizeTransitionMatrix();
+		normalizeInitialSigns();
 	}
 	
 	/*
 	 * Creates a new transition matrix that is not normalized.
 	 * @param tagger the tagger...
-	 * @return A new transition matrix that is not normalized.
+	 * 
+	 * +
+	 * 
+	 * Creates HashMap...
 	 */
-	private double[][] makeTransitionMatrix(MaxentTagger tagger) throws IOException {
-		double[][] tM = new double[tagger.numTags()][tagger.numTags()];
+	private void fillTransitionMatrix(MaxentTagger tagger) throws IOException {
+		transitionMatrix = new double[tagger.numTags()][tagger.numTags()];
+		dictionary = new HashMap<String, ArrayList<String>>();
 		
 		BufferedReader in = new BufferedReader(new FileReader(corpusPath));
 		
 		String line;
 		while ((line = in.readLine()) != null) { 	// Read all lines from corpus.
-			line = tagger.tagString(line);			// Get tags for each word in line.
-			String[] words = line.split("\\s");		// Make a list of single words.
-			int previousTag = -1;					// There is no previous tag yet.
-			for (String word : words) {				// For ever word in word...
-				if (previousTag == -1) {			// Go in here if it is the first word of the line.
-					previousTag = tagger.getTagIndex(word.split("_")[1]);
-					initialSigns[previousTag]++;	
-				} else {							// Go here if it is not the first word of the line.
-					int currentTag = tagger.getTagIndex(word.split("_")[1]);
-					tM[previousTag][currentTag]++;
-					previousTag = currentTag;	
+			String[] sentences = line.split(terminalSign);
+			for (String sentence : sentences) {
+				sentence = tagger.tagString(sentence);			// Get tags for each word in sentence.
+				String[] words = sentence.split("\\s");			// Make a list of single words.
+				int previousTag = -1;							// There is no previous tag yet.
+				for (String word : words) {						// For ever word in word...
+					if (word.length() > 0) {
+						if (previousTag == -1) {				// Go in here if it is the first word of the line.
+							previousTag = tagger.getTagIndex(word.split("_")[1]);
+							initialSigns[previousTag]++;	
+						} else {								// Go here if it is not the first word of the line.
+							int currentTag = tagger.getTagIndex(word.split("_")[1]);
+							transitionMatrix[previousTag][currentTag]++;
+							previousTag = currentTag;	
+						}
+						
+						// Add word to dictionary.
+						String[] tempWord = word.split("_");
+						addToDictionary(dictionary, tempWord[1], tempWord[0]);
+					}
+				}
+				// Last tag goes to terminal sign.
+				if (previousTag != -1) {
+					transitionMatrix[previousTag][terminalTagIndex]++;
 				}
 			}
 		}
-		
 		in.close();
-
-		return tM;
+		
+		// Add terminal sign to HashMap
+		addToDictionary(dictionary, ".", ".");
+		addToDictionary(dictionary, "#", "#");
 	}
 	
 	/*
@@ -71,7 +92,7 @@ class TransitionMatrix {
 	 * @param tagger  the tagger...
 	 * @return A new HashMap (key = tag, value = list of words).
 	 */
-	private HashMap<String, ArrayList<String>> mapWords(MaxentTagger tagger) throws IOException {
+	private void mapWords(MaxentTagger tagger) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(corpusPath));
 		
 		HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
@@ -87,42 +108,42 @@ class TransitionMatrix {
 		}
 		
 		in.close();
-		return dictionary;
+		
+		// Add terminal sign to HashMap
+		addToDictionary(dictionary, ".", ".");
+		addToDictionary(dictionary, "#", "#");
 	}
 	
-	private String[] fillTags(MaxentTagger tagger) {
-		String[] tags = new String[tagger.numTags()];
+	private void fillTags(MaxentTagger tagger) {
+		tags = new String[tagger.numTags()];
 		for (int i = 0; i < tagger.numTags(); i++) {
 			tags[i] = tagger.getTag(i);
 		}
-		return tags;
 	}
 	
 	/*
 	 * Normalize a matrix. If the sum of a row is 0 then do nothing with that row.
 	 * @param matrix the matrix to be normalized.
-	 * @return the normalized matrix.
 	 */
-	private double[][] normalizeMatrix(double[][] matrix) {
-		for (int i = 0; i < matrix.length; i++) {
-			double c = 1 / arraySum(matrix[i]);
+	private void normalizeTransitionMatrix() {
+		for (int i = 0; i < transitionMatrix.length; i++) {
+			double c = 1 / arraySum(transitionMatrix[i]);
 			if (c == Double.POSITIVE_INFINITY || c == Double.NEGATIVE_INFINITY || c == Double.NaN) { // Vad ska vi göra om hela raden är 0?
 				/*
 				for (int j = 0; j < matrix[i].length; j++) {
 					if (j == i) {
-						matrix[i][j] = 1; 	// Låta den gå till sig själv endast?
+						transitionMatrix[i][j] = 1; 	// Låta den gå till sig själv endast?
 					} else {
-						matrix[i][j] = 0;
+						transitionMatrix[i][j] = 0;
 					}
 				}
 				*/
 			} else {
-				for (int j = 0; j < matrix[i].length; j++) {
-					matrix[i][j] = c * matrix[i][j];
+				for (int j = 0; j < transitionMatrix[i].length; j++) {
+					transitionMatrix[i][j] = c * transitionMatrix[i][j];
 				}
 			}
 		}
-		return matrix;
 	}
 	
 	/*
@@ -130,12 +151,11 @@ class TransitionMatrix {
 	 * @param array the array to be normalized.
 	 * @return the normalized array.
 	 */
-	private double[] normalizeArray(double[] array) {
-		double c = 1 / arraySum(array);
-		for (int i = 0; i < array.length; i++) {
-			array[i] = c * array[i];
+	private void normalizeInitialSigns() {
+		double c = 1 / arraySum(initialSigns);
+		for (int i = 0; i < initialSigns.length; i++) {
+			initialSigns[i] = c * initialSigns[i];
 		}
-		return array;
 	}
 	
 	/*
