@@ -11,7 +11,7 @@ public class MatrixConstraints {
 	
 	public MatrixConstraints(double[][] matrix, int maxDepth) {
 		allWordClasses = matrix.length;
-		endWordClass = 11;
+		endWordClass = 10;
 		newMatrix = new double[matrix.length][matrix[0].length];
 		constrainMatrix(0, matrix, maxDepth);
 	}

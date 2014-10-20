@@ -8,7 +8,11 @@ import java.util.HashMap;
 
 
 public class GenerateTweet {
-	private final static int tweetLength = 12;
+	private final static int tweetLength = 6;
+	
+	static String[] tags;
+	static HashMap<String, ArrayList<String>> dictionary;
+	static double[] initialDistribution;
 	
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
@@ -16,27 +20,43 @@ public class GenerateTweet {
 		System.out.println("Created new TM");
 		double[][] constrainedTM = getConstrainedMatrix(tm.getMatrix(), tweetLength); 
 		System.out.println("Created new cTM");
-		HashMap<String, ArrayList<String>> dictionary = tm.getDictionary();
-		String[] tags = tm.getTags();
-		StringBuilder tweet = new StringBuilder();
+		dictionary = tm.getDictionary();
+		tags = tm.getTags();
+		initialDistribution = tm.getInitialDistribution();
 		System.out.println("Starting to generate tweets");
 		
-		// 
-		int index = probabilisticIndex(tm.getInitialDistribution());
-		tweet.append(getRandomWord(tags[index], dictionary));
-		tweet.append(" ");
-		for(int i = 0; i < tweetLength; i++) {
-			index = probabilisticIndex(tm.getMatrix()[index]);
-			tweet.append(getRandomWord(tags[index], dictionary));
-			tweet.append(" ");	
-		}
-		tweet.delete(tweet.length()-1, tweet.length());
+		System.out.println("Without constraints:\t" + generateTweet(tm.getMatrix()));
+		
+		System.out.println("With constraints:\t" + generateTweet(constrainedTM));
 		long endTime = System.currentTimeMillis();
 		System.out.println("Time taken: " + (endTime - startTime) + "ms");
-		System.out.println(tweet.toString());
 		// Generate tweet with regular transitionmatrix
 		// Constrain transition matrix
 		// Generate new tweet
+	}
+	
+	public static String generateTweet(double[][] matrix) {
+		int index = probabilisticIndex(initialDistribution);
+		StringBuilder tweet = new StringBuilder();
+		tweet.append(getRandomWord(tags[index], dictionary));
+		tweet.append(" ");
+		for(int i = 0; i < tweetLength-1; i++) {
+			index = probabilisticIndex(matrix[index]);
+			if (index == 10) {
+				tweet.replace(tweet.length()-1, tweet.length(), ". ");
+				index = probabilisticIndex(initialDistribution);
+				if (i == tweetLength - 2)
+					break;
+			} else if (index == 1) {
+				tweet.replace(tweet.length()-1, tweet.length(), ", ");
+				i--;
+			}
+			tweet.append(getRandomWord(tags[index], dictionary));
+			tweet.append(" ");
+		}
+		tweet.delete(tweet.length()-1, tweet.length());
+		
+		return tweet.toString();
 	}
 	
 	// Returns the index of a number
@@ -50,7 +70,7 @@ public class GenerateTweet {
 			}
 		}
 		
-		return intervals.length-1;
+		return 10;
 	}
 	
 	public static double[][] getConstrainedMatrix(double[][] matrix, int tweetLength) throws IOException {
@@ -92,6 +112,9 @@ public class GenerateTweet {
 	}
 	
 	public static String getRandomWord(String type, HashMap<String, ArrayList<String>> dictionary) {
+		if (type.equals("#")) {
+			return "<-";
+		}
 		ArrayList<String> words = dictionary.get(type);
 		return words.get((int) (Math.random() * words.size()));
 	}

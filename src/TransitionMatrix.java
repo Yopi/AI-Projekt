@@ -7,10 +7,6 @@ import java.util.HashMap;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 class TransitionMatrix {
-	private final String taggerPath	  = "data/models/english-left3words-distsim.tagger";
-	private final String corpusPath	  = "data/corpus/cb.txt";
-	private final String terminalSign = "[.?!]";
-	
 	private double[]   initialSigns;
 	private double[][] transitionMatrix;
 	private HashMap<String, ArrayList<String>> dictionary;
@@ -22,7 +18,7 @@ class TransitionMatrix {
 	}
 	
 	public TransitionMatrix() throws IOException {
-		MaxentTagger tagger = new MaxentTagger(taggerPath);
+		MaxentTagger tagger = new MaxentTagger(Constants.taggerPath);
 		terminalTagIndex = tagger.getTagIndex(".");
 		
 		initialSigns = new double[tagger.numTags()];
@@ -49,11 +45,13 @@ class TransitionMatrix {
 		transitionMatrix = new double[tagger.numTags()][tagger.numTags()];
 		dictionary = new HashMap<String, ArrayList<String>>();
 		
-		BufferedReader in = new BufferedReader(new FileReader(corpusPath));
+		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
 		
 		String line;
 		while ((line = in.readLine()) != null) { 	// Read all lines from corpus.
-			String[] sentences = line.split(terminalSign);
+			if (line.equals(""))
+				continue;
+			String[] sentences = line.split(Constants.terminalSign);
 			for (String sentence : sentences) {
 				sentence = tagger.tagString(sentence);			// Get tags for each word in sentence.
 				String[] words = sentence.split("\\s");			// Make a list of single words.
@@ -62,13 +60,15 @@ class TransitionMatrix {
 					if (word.length() > 0) {
 						if (previousTag == -1) {				// Go in here if it is the first word of the line.
 							previousTag = tagger.getTagIndex(word.split("_")[1]);
-							initialSigns[previousTag]++;	
+							if (previousTag != -1)
+								initialSigns[previousTag]++;	
 						} else {								// Go here if it is not the first word of the line.
 							int currentTag = tagger.getTagIndex(word.split("_")[1]);
-							transitionMatrix[previousTag][currentTag]++;
-							previousTag = currentTag;	
+							if (currentTag != -1) {
+								transitionMatrix[previousTag][currentTag]++;
+								previousTag = currentTag;
+							}
 						}
-						
 						// Add word to dictionary.
 						String[] tempWord = word.split("_");
 						addToDictionary(dictionary, tempWord[1], tempWord[0]);
@@ -81,10 +81,6 @@ class TransitionMatrix {
 			}
 		}
 		in.close();
-		
-		// Add terminal sign to HashMap
-		addToDictionary(dictionary, ".", ".");
-		addToDictionary(dictionary, "#", "#");
 	}
 	
 	/*
@@ -93,7 +89,7 @@ class TransitionMatrix {
 	 * @return A new HashMap (key = tag, value = list of words).
 	 */
 	private void mapWords(MaxentTagger tagger) throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(corpusPath));
+		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
 		
 		HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
 		
@@ -111,7 +107,6 @@ class TransitionMatrix {
 		
 		// Add terminal sign to HashMap
 		addToDictionary(dictionary, ".", ".");
-		addToDictionary(dictionary, "#", "#");
 	}
 	
 	private void fillTags(MaxentTagger tagger) {
@@ -180,6 +175,7 @@ class TransitionMatrix {
 		ArrayList<String> list = dictionary.get(tag);
 		if(list == null) list = new ArrayList<String>();
 		
+		//System.out.println(word + "\t" + tag);
 		list.add(word);
 		dictionary.put(tag, list);
 	}
