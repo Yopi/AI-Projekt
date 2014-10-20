@@ -6,6 +6,12 @@ cb['tweets'].map! do |tweet|
   tweet.gsub("\n\r", '')
 end
 tweets = cb['tweets'].join("\n")
-tweets.gsub!(/[_]/, '')
 tweets.gsub!(URI_REGEX, '')
+tweets.gsub!(/(@\w+)/, '')
+tweets.gsub!(/[!]+/, '!')
+tweets.gsub!(/[?]+/, '?')
+tweets.gsub!(/[.]+/, '.')
+tweets.gsub!(" .", '.')
+tweets.gsub!(/\s+/, ' ')
+
 puts tweets
