@@ -12,21 +12,22 @@ class TransitionMatrix {
 	private HashMap<String, ArrayList<String>> dictionary;
 	private String[] tags;
 	private int terminalTagIndex;
+	private MaxentTagger tagger;
 	
 	public static void main(String[] args) throws IOException { 
 		new TransitionMatrix(); 
 	}
 	
 	public TransitionMatrix() throws IOException {
-		MaxentTagger tagger = new MaxentTagger(Constants.taggerPath);
+		tagger = new MaxentTagger(Constants.taggerPath);
 		terminalTagIndex = tagger.getTagIndex(".");
 		
 		initialSigns = new double[tagger.numTags()];
 		
 		// Create
-		fillTransitionMatrix(tagger);
+		fillTransitionMatrix();
 		//mapWords(tagger);
-		fillTags(tagger);
+		fillTags();
 		
 		// Normalize
 		normalizeTransitionMatrix();
@@ -41,7 +42,7 @@ class TransitionMatrix {
 	 * 
 	 * Creates HashMap...
 	 */
-	private void fillTransitionMatrix(MaxentTagger tagger) throws IOException {
+	private void fillTransitionMatrix() throws IOException {
 		transitionMatrix = new double[tagger.numTags()][tagger.numTags()];
 		dictionary = new HashMap<String, ArrayList<String>>();
 		
@@ -83,33 +84,7 @@ class TransitionMatrix {
 		in.close();
 	}
 	
-	/*
-	 * Map each word to a word type.
-	 * @param tagger  the tagger...
-	 * @return A new HashMap (key = tag, value = list of words).
-	 */
-	private void mapWords(MaxentTagger tagger) throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
-		
-		HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
-		
-		String line;
-		while ((line = in.readLine()) != null) {	// Read all lines of corpus.
-			line = tagger.tagString(line);
-			String[] words = line.split("\\s");
-			for (String word : words) {
-				String[] tempWord = word.split("_");
-				addToDictionary(dictionary, tempWord[1], tempWord[0]);
-			}
-		}
-		
-		in.close();
-		
-		// Add terminal sign to HashMap
-		addToDictionary(dictionary, ".", ".");
-	}
-	
-	private void fillTags(MaxentTagger tagger) {
+	private void fillTags() {
 		tags = new String[tagger.numTags()];
 		for (int i = 0; i < tagger.numTags(); i++) {
 			tags[i] = tagger.getTag(i);
@@ -180,6 +155,12 @@ class TransitionMatrix {
 		dictionary.put(tag, list);
 	}
 	
+	public String getTag(String word) {
+		String[] s = tagger.tagString(word).split("_");
+//		System.out.println(s[s.length - 1]);
+		return s[s.length - 1];
+	}
+	
 	public double[][] getMatrix() {
 		return transitionMatrix;
 	}
@@ -194,17 +175,5 @@ class TransitionMatrix {
 	
 	public double[] getInitialDistribution() {
 		return initialSigns;
-	}
-	
-	/*
-	 * Print a matrix to stdout, containing doubles, with 2 decimals.
-	 * @param matrix the matrix to be printed to stdout.
-	 */
-	private void printMatrix(double[][] matrix) {
-		for (double[] d : matrix) {
-			for (double dd : d)
-				System.out.print(String.format("%.2f", dd) + "\t");
-			System.out.println();
-		}
 	}
 }
