@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class NGram {
 	private ArrayList<ArrayList<String[]>> nSeries;
 	
 	public NGram(int gram) throws IOException {
+		MaxentTagger tagger = new MaxentTagger(Constants.taggerPath);
+		
 		gram = gram + 1;
 		nSeries = new ArrayList<ArrayList<String[]>>();
 		
@@ -19,25 +22,52 @@ public class NGram {
 		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
 		
 		String line;
+		boolean startOfSentence = false;
+		int howManyLeft = 0;
 		while ((line = in.readLine()) != null) {
-			String[] sentences = line.split(Constants.terminalSign);
-			for (String sentence : sentences) {
-				String[] words = sentence.trim().split("\\s");
-				for (int i = 0; i < words.length; i++) {
-					int length = Math.min(i+1, gram);
-					String[] wordList = new String[length];
-					length = Math.min(i, gram-1);
-					int minus = 0;
-					for (int j = i; j >= 0 && length - minus >= 0; j--) {
-						wordList[length - minus] = words[j];
-						minus++;
+			if (line.equals("")) continue;
+			line = tagger.tagString(line);
+			
+			String[] words;
+			String[] newSentenceWordList = new String[gram-1];
+			words = line.split("\\s");
+			for (int i = 0; i < words.length; i++) {
+				int length = Math.min(i+1, gram);
+				String[] wordList = new String[length];
+				length = Math.min(i, gram-1);
+				int minus = 0;
+				
+				if (startOfSentence) {
+					newSentenceWordList[howManyLeft] = words[i];
+					nSeries.get(howManyLeft).add(Arrays.copyOfRange(newSentenceWordList, 0, howManyLeft+1));
+					howManyLeft++;
+					if (howManyLeft == gram-1) {
+						startOfSentence = false;
+						howManyLeft = 0;
 					}
-					nSeries.get(length).add(wordList);
+				}
+				
+				for (int j = i; j >= 0 && length - minus >= 0; j--) {
+					wordList[length - minus] = words[j];
+					minus++;
+				}
+				nSeries.get(length).add(wordList);
+				
+				if (split(words[i])[0].matches(Constants.terminalSign)) {
+					startOfSentence = true;
 				}
 			}
 		}
 		
 		in.close();
+	}
+	
+	private String[] split(String word) {
+		String[] s = new String[2];
+		int i = word.lastIndexOf("_");
+		s[0] = word.substring(0, i);
+		s[1] = word.substring(i + 1, word.length());
+		return s;
 	}
 	
 	public ArrayList<String> getNextWord(String previousWords) {
