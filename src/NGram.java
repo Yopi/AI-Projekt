@@ -9,7 +9,7 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 public class NGram {
 	private ArrayList<ArrayList<String[]>> nSeries;
 	
-	public NGram(int gram) throws IOException {
+	public NGram(int gram) {
 		MaxentTagger tagger = new MaxentTagger(Constants.taggerPath);
 		
 		gram = gram + 1;
@@ -19,47 +19,52 @@ public class NGram {
 			nSeries.add(new ArrayList<String[]>());
 		}
 		
-		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
-		
-		String line;
-		boolean startOfSentence = false;
-		int howManyLeft = 0;
-		while ((line = in.readLine()) != null) {
-			if (line.equals("")) continue;
-			line = tagger.tagString(line);
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
 			
-			String[] words;
-			String[] newSentenceWordList = new String[gram-1];
-			words = line.split("\\s");
-			for (int i = 0; i < words.length; i++) {
-				int length = Math.min(i+1, gram);
-				String[] wordList = new String[length];
-				length = Math.min(i, gram-1);
-				int minus = 0;
+			String line;
+			boolean startOfSentence = false;
+			int howManyLeft = 0;
+			while ((line = in.readLine()) != null) {
+				if (line.equals("")) continue;
+				line = tagger.tagString(line);
 				
-				if (startOfSentence) {
-					newSentenceWordList[howManyLeft] = words[i];
-					nSeries.get(howManyLeft).add(Arrays.copyOfRange(newSentenceWordList, 0, howManyLeft+1));
-					howManyLeft++;
-					if (howManyLeft == gram-1) {
-						startOfSentence = false;
-						howManyLeft = 0;
+				String[] words;
+				String[] newSentenceWordList = new String[gram-1];
+				words = line.split("\\s");
+				for (int i = 0; i < words.length; i++) {
+					int length = Math.min(i+1, gram);
+					String[] wordList = new String[length];
+					length = Math.min(i, gram-1);
+					int minus = 0;
+					
+					if (startOfSentence) {
+						newSentenceWordList[howManyLeft] = words[i];
+						nSeries.get(howManyLeft).add(Arrays.copyOfRange(newSentenceWordList, 0, howManyLeft+1));
+						howManyLeft++;
+						if (howManyLeft == gram-1) {
+							startOfSentence = false;
+							howManyLeft = 0;
+						}
+					}
+					
+					for (int j = i; j >= 0 && length - minus >= 0; j--) {
+						wordList[length - minus] = words[j];
+						minus++;
+					}
+					nSeries.get(length).add(wordList);
+					
+					if (split(words[i])[0].matches(Constants.terminalSign)) {
+						startOfSentence = true;
 					}
 				}
-				
-				for (int j = i; j >= 0 && length - minus >= 0; j--) {
-					wordList[length - minus] = words[j];
-					minus++;
-				}
-				nSeries.get(length).add(wordList);
-				
-				if (split(words[i])[0].matches(Constants.terminalSign)) {
-					startOfSentence = true;
-				}
 			}
+			
+			in.close();
+		} catch(IOException e) {
+			System.err.println("n-gram could not be generated");
+			System.exit(-1);
 		}
-		
-		in.close();
 	}
 	
 	private String[] split(String word) {

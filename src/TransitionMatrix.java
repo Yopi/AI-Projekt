@@ -3,6 +3,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
@@ -14,36 +17,29 @@ class TransitionMatrix {
 	private int terminalTagIndex;
 	public MaxentTagger tagger;
 	
-	public static void main(String[] args) throws IOException { 
+	public static void main(String[] args) { 
 		new TransitionMatrix(); 
 	}
 	
-	public TransitionMatrix() throws IOException {
+	public TransitionMatrix() {
 		tagger = new MaxentTagger(Constants.taggerPath);
 		terminalTagIndex = tagger.getTagIndex(".");
 		
 		initialSigns = new double[tagger.numTags()];
 		
 		// Create
-		fillTransitionMatrix();
+		try {
+			fillTransitionMatrix();
+		} catch(IOException e) {
+			System.err.println("Could not fill transitions matrix");
+			System.exit(-1);
+		}
 		//mapWords(tagger);
 		fillTags();
 		
 		// Normalize
 		normalizeTransitionMatrix();
 		initialSigns = normalizeArray(initialSigns);
-		
-		/*
-		for (int i = 0; i < transitionMatrix.length; i++) {
-			for (int j = 0; j < transitionMatrix.length; j++) {
-				System.out.print(transitionMatrix[i][j] + "\t");
-			}
-			System.out.println();
-		}
-		*/
-		System.out.println(tagger.getTag(tagger.numTags()-3));
-		System.out.println(tagger.getTag(43));
-		System.out.println(tagger.getTag(45));
 	}
 	
 	/*
@@ -59,70 +55,47 @@ class TransitionMatrix {
 		dictionary = new HashMap<String, ArrayList<String>>();
 		
 		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
-		
 		String[] splitSign = new String[]{".", "!", "?", ","};
 		
-		int previousTag = -1;							// There is no previous tag yet.
 		String line;
+		StringBuilder sb = new StringBuilder();
 		while ((line = in.readLine()) != null) { 	// Read all lines from corpus.
-			//if (line.equals(""))
-			//	continue;
-			String[] words;
-			StringBuilder sb;
-			String endSymbol = line.substring(line.length()-1);
-			boolean terminalSign = false;
-			line = line.substring(0, line.length());
-			for (String sign : splitSign) {
-				if (sign.equals(endSymbol)) {
-					terminalSign = true;
-				}
-				words = line.split("\\" + sign);
-				sb = new StringBuilder();
-				for (int i = 0; i < words.length; i++) {
-					if (i == words.length-1) {
-						sb.append(words[i]);
-						break;
-					}
-					sb.append(words[i] + " " + sign);
-				}
-				line = sb.toString().trim();
-			}
-			if (terminalSign) {
-				line += " " + endSymbol;
-			}
-			
-			line = tagger.tagString(line);					// Get tags for each word in line.
-			words = line.split("\\s");
-			boolean newSentence = false;
-			for (String word : words) {						// For ever word in word...
-				if (previousTag == -1) {				// Go in here if it is the first word of the line.
+			if (line.equals(""))
+				continue;
+			sb.append(line);
+		}
+		in.close();
+
+		String[] sentences = sb.toString().split("(?<=[.!?])");
+		String endSymbol;
+		String[] words;
+		for(String sentence : sentences) {
+			int previousTag = -1; // There is no previous tag yet.
+			endSymbol = sentence.substring(sentence.length()-1);
+			sentence = sentence.substring(0, sentence.length()-1).trim();
+
+			sentence = tagger.tagString(sentence); // Get tags for each word in line.
+			words = sentence.split("\\s");
+			for (String word : words) {	// For every word in word...
+				if (previousTag == -1) { 
+					// Go in here if it is the first word of the line.
 					previousTag = tagger.getTagIndex(word.split("_")[1]);
-					if (previousTag != -1) {
-						initialSigns[previousTag]++;	
-					}
-				} else {								// Go here if it is not the first word of the line.
+					initialSigns[previousTag]++;	
+				} else {					
+					// Go here if it is not the first word of the line.
 					int currentTag = tagger.getTagIndex(word.split("_")[1]);
-					if (currentTag != -1) {
-						transitionMatrix[previousTag][currentTag]++;
-						previousTag = currentTag;
-						if (newSentence) {
-							initialSigns[currentTag]++;
-							newSentence = false;
-						}
-					}
+					transitionMatrix[previousTag][currentTag]++;
+					previousTag = currentTag;
 				}
+
 				// Add word to dictionary.
 				String[] tempWord = split(word);
 				addToDictionary(dictionary, tempWord[1], tempWord[0]);
-				
-				newSentence = tempWord[0].matches(Constants.terminalSign);
 			}
+
 			// Last tag goes to terminal sign.
-			if (previousTag != -1) {
-				transitionMatrix[previousTag][terminalTagIndex]++;
-			}
+			if (previousTag != -1) transitionMatrix[previousTag][terminalTagIndex]++;
 		}
-		in.close();
 	}
 	
 	private String[] split(String word) {
@@ -206,9 +179,26 @@ class TransitionMatrix {
 	}
 	
 	public String getTag(String word) {
-		String[] s = tagger.tagString(word).split("_");
-//		System.out.println(s[s.length - 1]);
-		return s[s.length - 1].trim();
+		for (Entry<String, ArrayList<String>> entry : dictionary.entrySet()) {
+		    ArrayList<String> words = entry.getValue();
+		    if(words.contains(word)) 
+		    	return entry.getKey();
+		}
+		
+		return "";
+	}
+	
+	public List<String> getTagsForWord(String word) {
+		List<String> tags = new ArrayList<String>();
+		word = word.split("_")[0];
+		for (Entry<String, ArrayList<String>> entry : dictionary.entrySet()) {
+		    ArrayList<String> words = entry.getValue();
+		    if(words.contains(word)) 
+		    	tags.add(entry.getKey());
+		}
+
+		if(tags.size() == 0) System.out.println(word + " did not have any tags at all");
+		return tags;
 	}
 	
 	public double[][] getMatrix() {
