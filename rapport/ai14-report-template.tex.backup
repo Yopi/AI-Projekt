@@ -71,9 +71,6 @@ We build upon the work by \citealp{McBarb} to implement our own constraints.
 
    
 \subsection{Contribution}
-\textbf{forklara for en datalog typ varfor det vi gjort ar vettigt.}\\
-
-
 A lot new research involves the constraining of Markov chains to produce text that fits different molds than just text generated from a corpus. 
 It is important to be able to generate text that is 
 
@@ -136,19 +133,8 @@ In i a similiar way we will weigh in the constrants from the transition matrix i
 to weigh in the probability for a specific part-of-speech to follow as well as a specific word.
 \\
 \textbf{Corpus:}\\
-In order to generate tweets, we first discussed the problem regarding the semantical corectness of a generalized tweet.
-The average level is according to our own experience far from sematically correct, which isn't a problem in understadabillity for an experienced twitter user,
-but is a problem for our POS who would not recognize the words. Even if it would give it an ''unknown``-tag, we would not be able to predict any kind of results.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1\linewidth]{machine_learning}
-  \caption{An example tweet}
-\end{figure}
-
-To solve this problem approximatily, we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in english.
-Our option fell on Carl Bildt, former foreight minister of Sweden, because of his active use of Twitter \textbf{Stor bokstav på Twitter, det är ju faktiskt ett namn?}, 
-that he tweets in english and that most of his tweets are in gramatically correct english.
+In order to iterate tweets for a specific twitter user, we first discussed the problem regarding the semantical corectness of a generalized tweet.
+The average level is according to our own experience far from 
 
 The Markov chain is built up with the use of n-grams of the second order, so called bigrams. This means in a limited corpus like for example
 ``Rolf has a dog.`` 

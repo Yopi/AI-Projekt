@@ -1,8 +1,13 @@
 \begin{thebibliography}{1}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem{McBarb}
-Pierre~Roy Gabriele~Barbieri, Francois~Pachet and Mirko~Degli Esposito.
+\bibitem[Barbieri et~al.(2012)Barbieri, Pachet, Roy, and Esposti]{McBarb}
+Gabriele Barbieri, François Pachet, Pierre Roy, and Mirko~Degli Esposti.
 \newblock Markov constraints for generating lyrics with style.
-\newblock 2012.
+\newblock 242:\penalty0 115--120, 2012.
 
 \end{thebibliography}

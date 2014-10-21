@@ -71,9 +71,6 @@ We build upon the work by \citealp{McBarb} to implement our own constraints.
 
    
 \subsection{Contribution}
-\textbf{forklara for en datalog typ varfor det vi gjort ar vettigt.}\\
-
-
 A lot new research involves the constraining of Markov chains to produce text that fits different molds than just text generated from a corpus. 
 It is important to be able to generate text that is 
 
