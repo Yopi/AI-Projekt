@@ -158,7 +158,7 @@ class TransitionMatrix {
 	public String getTag(String word) {
 		String[] s = tagger.tagString(word).split("_");
 //		System.out.println(s[s.length - 1]);
-		return s[s.length - 1];
+		return s[s.length - 1].trim();
 	}
 	
 	public double[][] getMatrix() {

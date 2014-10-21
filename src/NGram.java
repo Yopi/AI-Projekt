@@ -36,6 +36,8 @@ public class NGram {
 				}
 			}
 		}
+		
+		in.close();
 	}
 	
 	public ArrayList<String> getNextWord(String previousWords) {

@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 
 public class GenerateTweet {
-	private final static int tweetLength = 25;
+	private final static int tweetLength = 15;
 	private final static int nGramLength = 2;
 	private final static int minLength = 3;
 	
@@ -20,25 +20,39 @@ public class GenerateTweet {
 	
 	public static void main(String[] args) throws IOException {
 		long startTime = System.currentTimeMillis();
+		long indTime = System.currentTimeMillis();
+		
 		tM = new TransitionMatrix();
-		System.out.println("Created new TM");
-		double[][] constrainedTM = getConstrainedMatrix(tM.getMatrix(), tweetLength); 
-		System.out.println("Created new cTM");
+		System.out.println("Created new TM [" + (System.currentTimeMillis() - indTime) + " ms]");
+		indTime = System.currentTimeMillis();
+		
+		//double[][] constrainedTM = getConstrainedMatrix(tM.getMatrix(), tweetLength); 
+		//System.out.println("Created new cTM [" + (System.currentTimeMillis() - indTime) + " ms]");
+		//indTime = System.currentTimeMillis();
+		
 		nGram = new NGram(nGramLength);
-		System.out.println("Created NGram of length " + nGramLength);
+		System.out.println("Created NGram of length " + nGramLength + " [" + (System.currentTimeMillis() - indTime) + " ms]");
+		
 		dictionary = tM.getDictionary();
 		tags = tM.getTags();
 		initialDistribution = tM.getInitialDistribution();
 		
 		System.out.println("Starting to generate tweets");
+		String tweet;
+		indTime = System.currentTimeMillis();
+		tweet = generateTweet(null, false);
+		System.out.println("With NGram [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);
 		
-		System.out.println("Without constraints:\t" + generateTweet(tM.getMatrix(), false));
+		indTime = System.currentTimeMillis();
+		tweet = generateTweet(tM.getMatrix(), false);
+		System.out.println("Without constraints [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);
 		
-		System.out.println("With constraints:\t" + generateTweet(constrainedTM, true));
+		//indTime = System.currentTimeMillis();
+		//tweet = generateTweet(constrainedTM, true);
+		//System.out.println("With constraints [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);
 		
-		System.out.println("With NGram:\t" + generateTweet(null, false));
 		long endTime = System.currentTimeMillis();
-		System.out.println("Time taken: " + (endTime - startTime) + "ms");
+		System.out.println("Total time taken: " + (endTime - startTime) + " ms");
 		// Generate tweet with regular transitionmatrix
 		// Constrain transition matrix
 		// Generate new tweet
@@ -50,10 +64,11 @@ public class GenerateTweet {
 		
 		while (wordsLeft > minLength) {
 			String sentence = generateSentence(rules, wordsLeft, constrained);
-			if (sentence.length() >= minLength) {
+			//System.out.println(sentence);
+			if (sentence.split("\\s").length >= minLength) {
 				tweet.append(sentence);
-				tweet.append(". ");
-				wordsLeft -= sentence.length();
+				tweet.replace(tweet.length()-1, tweet.length(), ". ");
+				wordsLeft -= sentence.split("\\s").length;
 			}
 		}
 		
@@ -81,32 +96,42 @@ public class GenerateTweet {
 		int maxRetries = 15;
 		int index = probabilisticIndex(initialDistribution);
 		for (int i = 0; i < maxLength && retries < maxRetries; i++) {	
+			//System.out.println(sentence.toString());
 			if (index == 10) { // If Terminal Sign
-				return sentence.toString();
+				if (i+1 >= minLength) {
+					return sentence.toString();
+				} else {
+					index = probabilisticIndex(initialDistribution);
+				}
 			} else if (index == 1) { // If ','
-				sentence.replace(sentence.length()-1, sentence.length(), ", ");
+				if (sentence.length() == 0) {
+					i--;
+					continue;
+				}
+				sentence.replace(sentence.length()-1, sentence.length(), ", "); // Tar död på heapen
 				i--;
+				index = probabilisticIndex(matrix[index]);
 				continue;
 			}
-			
+
 			// Selected word-type
 			String type = tags[index];
 			
 			// Get all possible next words, remove words of wrong type
 			ArrayList<String> posWords = nGram.getNextWord(sentence.toString());
-			for (int j = 0; j < posWords.size(); j++)
+			for (int j = 0; j < posWords.size(); j++) {
+				//System.out.println("Tag: " + type + ", posTag: " + tM.getTag(posWords.get(j)) + ", equals: " + tM.getTag(posWords.get(j)).equals(type));
 				if (!tM.getTag(posWords.get(j)).equals(type)) {
 					posWords.remove(j);
 					j--;
 				}
-			
+			}
 			// If there are no possible words left, try again
 			if (posWords.size() == 0) {
 				retries++;
 				i--;
 				continue;
 			}
-			
 			// Pick one acceptable word randomly and append to sentence
 			String sWord = posWords.get((int) (Math.random() * posWords.size()));
 			sentence.append(sWord);
@@ -200,6 +225,13 @@ public class GenerateTweet {
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader("data/constrainedMatrix.bin"));
+			
+			// So it creates a new matrix if the current is with wrong tweetLength.
+			if (Integer.parseInt(br.readLine()) != tweetLength) {
+				br.close();
+				throw new IOException();
+			}
+			
 			int sizeOfMatrix = Integer.parseInt(br.readLine());
 			newMatrix = new double[sizeOfMatrix][sizeOfMatrix];
 			String partMatrix = "";
@@ -220,11 +252,14 @@ public class GenerateTweet {
 			theFile.createNewFile();
 		    FileWriter fw = new FileWriter("data/constrainedMatrix.bin");
 		    
-		    fw.write("" + newMatrix.length);
+		    fw.write(tweetLength + "\n");		// Save tweetLength as the first line of the file.
+		    fw.write(newMatrix.length + "\n");	// Save the newMatrix length as the second line of the file.
 		    for (int i = 0; i < newMatrix.length; i++) {
-		    	fw.write("\n");
 		    	for (int j = 0; j < newMatrix[0].length; j++) {
 		    		fw.write(newMatrix[i][j] + ",");
+		    	}
+		    	if (i+1 < newMatrix.length) {
+		    		fw.write("\n");
 		    	}
 		    }
 		    fw.close();
@@ -233,9 +268,6 @@ public class GenerateTweet {
 	}
 	
 	public static String getRandomWord(String type, HashMap<String, ArrayList<String>> dictionary) {
-		if (type.equals("#")) {
-			return "<-";
-		}
 		ArrayList<String> words = dictionary.get(type);
 		return words.get((int) (Math.random() * words.size()));
 	}
