@@ -92,7 +92,6 @@ public class TweetGenerator {
 		int i = 0;
 		while(true) {
 			if(split(lastWord)[0].matches(Constants.terminalSign)) {
-				System.out.println(sentence.toString());
 				return sentence.toString();
 			}
 			
@@ -104,9 +103,6 @@ public class TweetGenerator {
 				ArrayList<String> posTerminalSigns = terminalsFromPos(posWords);				
 				if (posTerminalSigns.size() > 0) {
 					posWords = posTerminalSigns;
-					
-					// TODO: Lägg det här på rätt ställe
-					return sentence.toString();
 				}
 			}
 			
