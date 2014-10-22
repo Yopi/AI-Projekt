@@ -32,8 +32,17 @@ public class GenerateTweet {
 	}
 	
 	public GenerateTweet() {
+		System.out.println("Building the transition matrix.");
+		long timeNow = System.currentTimeMillis();
 		tM = new TransitionMatrix();
+		long endTime = System.currentTimeMillis();
+		System.out.println("Transition matrix complete [" + (endTime - timeNow) + " ms]");
+		
+		System.out.println("Initializing the tweet generator.");
+		timeNow = System.currentTimeMillis();
 		tg = new TweetGenerator(tM, maxLength, nGramLength, minLength);
+		endTime = System.currentTimeMillis();
+		System.out.println("Tweet generator initialized [" + (endTime - timeNow) + " ms]");
 		
 		System.out.println("Starting to generate tweets");
 		Scanner sc = new Scanner(System.in);
@@ -43,11 +52,16 @@ public class GenerateTweet {
                 break;
             }
 			String tweet;
-			tweet = getTweetNGram();
-			System.out.println("With NGram: " + tweet);
 			
+			timeNow = System.currentTimeMillis();
+			tweet = getTweetNGram();
+			endTime = System.currentTimeMillis();
+			System.out.println("With NGram [" + (endTime - timeNow) + " ms]:\t" + tweet);
+			
+			timeNow = System.currentTimeMillis();
 			tweet = getTweetTM();
-			System.out.println("With TM: " + tweet);	
+			endTime = System.currentTimeMillis();
+			System.out.println("With TM [" + (endTime - timeNow) + " ms]:\t" + tweet);	
 			
 			System.out.println("\nPress ENTER to proceed (q + ENTER to quit).\n");
         }
