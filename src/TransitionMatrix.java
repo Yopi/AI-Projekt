@@ -128,7 +128,7 @@ class TransitionMatrix {
 			while ((line = in.readLine()) != null) { 	// Read all lines from corpus.
 				if (line.equals(""))
 					continue;
-				sb.append(line);
+				sb.append(line.trim() + " ");
 			}
 			in.close();
 		} catch (IOException e) {
@@ -138,10 +138,10 @@ class TransitionMatrix {
 		
 		String[] tempSentences = sb.toString().split("(?<=[.!?])");
 		for (String sentence : tempSentences) {
-			sentence = sentence.replace("_", " ");
-			if(sentence.trim().equals("")) continue;
+			sentence = sentence.replace("_", " ").trim();
+			if(sentence.equals("")) continue;
 			sentence = tagger.tagString(sentence);  // Get tags for each word in line.
-			sentences.add(sentence.trim());
+			sentences.add(sentence);
 		}
 		saveSentencesToFile();
 	}
