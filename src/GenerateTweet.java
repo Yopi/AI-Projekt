@@ -1,28 +1,39 @@
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 
 public class GenerateTweet {
-	private final static int tweetLength = 15;
-	private final static int nGramLength = 2;
-	private final static int minLength = 5;
+	private int maxLength = 30;
+	private int minLength = 25;
+	private int nGramLength = 2;
 	
 	static String[] tags;
 	static HashMap<String, ArrayList<String>> dictionary;
 	static double[] initialDistribution;
 	static TransitionMatrix tM;
+	TweetGenerator tg;
 	
-	public static void main(String[] args) throws IOException {
-		long startTime = System.currentTimeMillis();
-		long indTime = System.currentTimeMillis();
-
-		tM = new TransitionMatrix();
-		System.out.println("Created new TM [" + (System.currentTimeMillis() - indTime) + " ms]");
+	public GenerateTweet(int maxL, int minL, int nGL) {
+		maxLength = maxL;
+		minLength = minL;
+		nGramLength = nGL;
 		
-		TweetGenerator tg = new TweetGenerator(tM, tweetLength, nGramLength, minLength);
-		indTime = System.currentTimeMillis();
+		tM = new TransitionMatrix();
+		tg = new TweetGenerator(tM, maxLength, nGramLength, minLength);
+	}
+	
+	public String getTweetNGram() {
+		return tg.generate(null);
+	}
+	
+	public String getTweetTM() {
+		return tg.generate(tM.getMatrix());
+	}
+	
+	public GenerateTweet() {
+		tM = new TransitionMatrix();
+		tg = new TweetGenerator(tM, maxLength, nGramLength, minLength);
 		
 		System.out.println("Starting to generate tweets");
 		Scanner sc = new Scanner(System.in);
@@ -32,17 +43,18 @@ public class GenerateTweet {
                 break;
             }
 			String tweet;
-			indTime = System.currentTimeMillis();
-			tweet = tg.generate(null);
-			System.out.println("With NGram [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);
+			tweet = getTweetNGram();
+			System.out.println("With NGram: " + tweet);
 			
-			indTime = System.currentTimeMillis();
-			tweet = tg.generate(tM.getMatrix());
-			System.out.println("With TM [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);	
+			tweet = getTweetTM();
+			System.out.println("With TM: " + tweet);	
 			
 			System.out.println("\nPress ENTER to proceed (q + ENTER to quit).\n");
         }
-		
-		System.out.println("Total time taken: " + (System.currentTimeMillis() - startTime) + " ms");
+		sc.close();
+	}
+	
+	public static void main(String[] args) {
+		new GenerateTweet();
 	}
 }

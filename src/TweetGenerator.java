@@ -3,31 +3,33 @@ import java.util.Iterator;
 
 
 public class TweetGenerator {
-	private int tweetLength, nGramLength, minLength;
+	private int maxLength, nGramLength, minLength, offset;
+	private int absolutMaxLength = 140;
 	private NGram nGram;
 	private TransitionMatrix tM;
 	public TweetGenerator(TransitionMatrix transitionMatrix, int tL, int nGL, int mL) {
 		tM = transitionMatrix;
-		tweetLength = tL;
+		maxLength = tL;
 		nGramLength = nGL;
 		minLength = mL;
+		offset = (int) (maxLength / minLength) * 2;
 		nGram = new NGram(nGramLength, tM.sentences);
 	}
 	
 	public String generate(double[][] rules) {
 		StringBuilder tweet = new StringBuilder();
-		int wordsLeft = tweetLength;
+		int wordsLeft = maxLength;
 		
-		while (wordsLeft > minLength) {
+		while (wordsLeft > minLength + offset) {
 			String sentence;
 			if (rules == null) {
-				sentence = nGramSentence(wordsLeft);
+				sentence = nGramSentence();
 			} else {
-				sentence = generateSentence(rules, wordsLeft);
+				sentence = generateSentence(rules);
 			}
-			if (sentence.split("\\s").length >= minLength) {
+			if (sentence.length() >= minLength && (tweet.length()+sentence.length()) < absolutMaxLength) {
 				tweet.append(sentence);
-				wordsLeft -= sentence.split("\\s").length;
+				wordsLeft -= sentence.length();
 			}
 		}
 		
@@ -56,6 +58,7 @@ public class TweetGenerator {
         for (String specialChar : specialChars) {
             tweet = tweet.replaceAll(" [" + specialChar + "]", specialChar);
         }
+        //tweet = tweet.replaceAll("$ ", "$");
         return tweet;
     }
 	
@@ -83,7 +86,7 @@ public class TweetGenerator {
 		return s;
 	}
 	
-	public String generateSentence(double[][] matrix, int maxLength) {
+	public String generateSentence(double[][] matrix) {
 		StringBuilder sentence = new StringBuilder();
 
 		int index = 0;
@@ -99,7 +102,7 @@ public class TweetGenerator {
 			ArrayList<String> posWords = nGram.getNextWord(sentence.toString());
 			if(posWords.size() == 0) break;
 			
-			if(i >= maxLength) {
+			if(sentence.length() >= minLength) {
 				ArrayList<String> posTerminalSigns = terminalsFromPos(posWords);				
 				if (posTerminalSigns.size() > 0) {
 					posWords = posTerminalSigns;
@@ -176,19 +179,18 @@ public class TweetGenerator {
 	}
 	
 	// Generates a sentence with the n-gram
-	public String nGramSentence(int maxLength) {
+	public String nGramSentence() {
 		StringBuilder sentence = new StringBuilder();
 		
 		// nGram is completely unrestrained
 		String lastWord = "";
-		int i = 0;
 		while(true) {
 			if(split(lastWord)[0].matches(Constants.terminalSign)) break;
 			
 			ArrayList<String> posWords = nGram.getNextWord(sentence.toString());
 			if (posWords.size() == 0) break;
 			
-			if (i >= maxLength) {
+			if (sentence.length() >= minLength) {
 				ArrayList<String> posTerminalSigns = terminalsFromPos(posWords);				
 				if (posTerminalSigns.size() > 0) {
 					posWords = posTerminalSigns;
@@ -198,7 +200,6 @@ public class TweetGenerator {
 			int index = (int)(Math.random() * posWords.size());
 			lastWord = posWords.get(index);
 			sentence.append(lastWord + " ");
-			i++;
 		}
 		
 		return sentence.toString();
