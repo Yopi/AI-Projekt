@@ -139,6 +139,7 @@ class TransitionMatrix {
 		String[] tempSentences = sb.toString().split("(?<=[.!?])");
 		for (String sentence : tempSentences) {
 			sentence = sentence.replace("_", " ");
+			if(sentence.trim().equals("")) continue;
 			sentence = tagger.tagString(sentence);  // Get tags for each word in line.
 			sentences.add(sentence.trim());
 		}
