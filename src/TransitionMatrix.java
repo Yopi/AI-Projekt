@@ -1,11 +1,12 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
@@ -16,6 +17,7 @@ class TransitionMatrix {
 	private String[] tags;
 	private int terminalTagIndex;
 	public MaxentTagger tagger;
+	public ArrayList<String> sentences;
 	
 	public static void main(String[] args) { 
 		new TransitionMatrix(); 
@@ -25,6 +27,8 @@ class TransitionMatrix {
 		tagger = new MaxentTagger(Constants.taggerPath);
 		terminalTagIndex = tagger.getTagIndex(".");
 		
+		transitionMatrix = new double[tagger.numTags()][tagger.numTags()];
+		dictionary = new HashMap<String, ArrayList<String>>();
 		initialSigns = new double[tagger.numTags()];
 		
 		// Create
@@ -51,30 +55,18 @@ class TransitionMatrix {
 	 * Creates HashMap...
 	 */
 	private void fillTransitionMatrix() throws IOException {
-		transitionMatrix = new double[tagger.numTags()][tagger.numTags()];
-		dictionary = new HashMap<String, ArrayList<String>>();
+		sentences = new ArrayList<String>();
+	
+		boolean successful = getSentencesFromFile();
 		
-		BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
-		String[] splitSign = new String[]{".", "!", "?", ","};
-		
-		String line;
-		StringBuilder sb = new StringBuilder();
-		while ((line = in.readLine()) != null) { 	// Read all lines from corpus.
-			if (line.equals(""))
-				continue;
-			sb.append(line);
+		if (!successful) {
+			getSentences();
 		}
-		in.close();
-
-		String[] sentences = sb.toString().split("(?<=[.!?])");
-		String endSymbol;
+		
 		String[] words;
 		for(String sentence : sentences) {
 			int previousTag = -1; // There is no previous tag yet.
-			endSymbol = sentence.substring(sentence.length()-1);
-			sentence = sentence.substring(0, sentence.length()-1).trim();
-
-			sentence = tagger.tagString(sentence); // Get tags for each word in line.
+			
 			words = sentence.split("\\s");
 			for (String word : words) {	// For every word in word...
 				if (previousTag == -1) { 
@@ -97,6 +89,80 @@ class TransitionMatrix {
 			if (previousTag != -1) transitionMatrix[previousTag][terminalTagIndex]++;
 		}
 	}
+	
+	private boolean getSentencesFromFile() throws IOException{
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader("data/sentences.bin"));
+
+            File file = new File(Constants.corpusPath);
+            // Check if the file at Constants.corpusPath has changed.
+            try {
+                if (Long.parseLong(br.readLine()) != file.lastModified()) {
+                    // The file has changed.
+                    br.close();
+                    throw new IOException();
+                }
+            } catch (NumberFormatException e) {
+                br.close();
+                throw new IOException();
+            }
+             
+            String sentence;
+            while ((sentence = br.readLine()) != null) {
+                sentences.add(sentence);
+            }
+            br.close();
+        } catch(IOException e) {
+            return false;
+        }
+        return true;
+    }
+	
+	private void getSentences() {
+		StringBuilder sb = new StringBuilder();
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(Constants.corpusPath));
+			
+			String line;
+			while ((line = in.readLine()) != null) { 	// Read all lines from corpus.
+				if (line.equals(""))
+					continue;
+				sb.append(line);
+			}
+			in.close();
+		} catch (IOException e) {
+			System.err.println("Fail reading error.");
+			System.exit(1);
+		}
+		
+		String[] tempSentences = sb.toString().split("(?<=[.!?])");
+		for (String sentence : tempSentences) {
+			sentence = sentence.replace("_", " ");
+			if(sentence.trim().equals("")) continue;
+			sentence = tagger.tagString(sentence);  // Get tags for each word in line.
+			sentences.add(sentence.trim());
+		}
+		saveSentencesToFile();
+	}
+     
+    private void saveSentencesToFile() {
+    	try {
+	        // Save sentences to file.
+	        File theFile = new File("data/sentences.bin");
+	        theFile.createNewFile();
+	        FileWriter fw = new FileWriter("data/sentences.bin");
+	         
+	        File file = new File(Constants.corpusPath);
+	        fw.write(file.lastModified() + "\n");   // Save the last modified date of the file at Constants.corpusPath.
+	        for (String sentence : sentences) {
+	            fw.write(sentence + "\n");
+	        }
+	        fw.close();
+    	} catch (IOException e) {
+    		System.err.println("File saving error.");
+    	}
+    }
 	
 	private String[] split(String word) {
 		String[] s = new String[2];

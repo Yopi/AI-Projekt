@@ -1,6 +1,4 @@
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 
@@ -13,7 +11,7 @@ public class TweetGenerator {
 		tweetLength = tL;
 		nGramLength = nGL;
 		minLength = mL;
-		nGram = new NGram(nGramLength);
+		nGram = new NGram(nGramLength, tM.sentences);
 	}
 	
 	public String generate(double[][] rules) {
@@ -36,20 +34,30 @@ public class TweetGenerator {
 		return humanifyTweet(tweet.toString());
 	}
 	
-	private String humanifyTweet(String tweet) {	
-		String[] tweetWords = tweet.split("\\s");
-		StringBuilder sb = new StringBuilder();
-		for (String word : tweetWords) {
-			sb.append(split(word)[0] + " ");
-		}
-		tweet = sb.toString();
-		
-		String[] specialChars = new String[]{".", "!", "?", ","};
-		for (String specialChar : specialChars) {
-			tweet = tweet.replaceAll(" [" + specialChar + "]", specialChar);
-		}
-		return tweet;
-	}
+	private String humanifyTweet(String tweet) {
+        String[] tweetWords = tweet.split("\\s");
+        StringBuilder sb = new StringBuilder();
+        boolean newSentence = true;
+        for (String word : tweetWords) {
+            word = word.split("_")[0] + " ";
+            if (newSentence) {
+                sb.append(Character.toUpperCase(word.charAt(0)) + word.substring(1));
+                newSentence = false;
+            } else {
+                sb.append(word);
+            }
+            if (word.trim().matches(Constants.terminalSign)) {
+                newSentence = true;
+            }
+        }
+        tweet = sb.toString();
+             
+        String[] specialChars = new String[]{".", "!", "?", ",", "'", ":", ";"};
+        for (String specialChar : specialChars) {
+            tweet = tweet.replaceAll(" [" + specialChar + "]", specialChar);
+        }
+        return tweet;
+    }
 	
 	// Loops through possible words and returns an arraylist with all terminals
 	public ArrayList<String> terminalsFromPos(ArrayList<String> posWords) {
@@ -84,7 +92,6 @@ public class TweetGenerator {
 		int i = 0;
 		while(true) {
 			if(split(lastWord)[0].matches(Constants.terminalSign)) {
-				System.out.println(sentence.toString());
 				return sentence.toString();
 			}
 			
@@ -96,9 +103,6 @@ public class TweetGenerator {
 				ArrayList<String> posTerminalSigns = terminalsFromPos(posWords);				
 				if (posTerminalSigns.size() > 0) {
 					posWords = posTerminalSigns;
-					
-					// TODO: Lägg det här på rätt ställe
-					return sentence.toString();
 				}
 			}
 			
@@ -147,14 +151,13 @@ public class TweetGenerator {
 			posTags = tM.normalizeArray(posTags);
 			index = probabilisticIndex(posTags);
 			String type = tags[index];
-			System.out.println("Type selected: " + type + ", Word in string: " + i);
 			
 			// Remove those words from the possible words that do not have the same type 
 			// as the one we have gotten from probabilisticIndex
 			Iterator<String> iterator = posWords.iterator();
 			while(iterator.hasNext()) {
 				String word = iterator.next();
-				if(tM.getTagsForWord(word).contains(type) == false) {
+				if(word.split("_")[1].contains(type) == false) {
 					iterator.remove();
 				}
 			}
