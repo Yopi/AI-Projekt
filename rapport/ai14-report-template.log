@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.1.14)  21 OCT 2014 16:54
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.6.15)  22 OCT 2014 13:19
 entering extended mode
  %&-line parsing enabled.
 **ai14-report-template.tex
@@ -85,39 +85,59 @@ Package: natbib 2009/07/16 8.31 (PWD, AO)
 LaTeX Info: Redefining \cite on input line 694.
 \c@NAT@ctr=\count88
 )
+(/usr/share/texmf-texlive/tex/latex/subfigure/subfigure.sty
+Package: subfigure 2002/03/15 v2.1.5 subfigure package
+\subfigtopskip=\skip54
+\subfigcapskip=\skip55
+\subfigcaptopadj=\dimen107
+\subfigbottomskip=\skip56
+\subfigcapmargin=\dimen108
+\subfiglabelskip=\skip57
+\c@subfigure=\count89
+\c@lofdepth=\count90
+\c@subtable=\count91
+\c@lotdepth=\count92
+
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(/usr/share/texmf-texlive/tex/latex/subfigure/subfigure.cfg)
+\subfig@top=\skip58
+\subfig@bottom=\skip59
+)
 (./ai14-report-template.aux)
 \openout1 = `ai14-report-template.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
 
 (/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count89
-\scratchdimen=\dimen107
+\scratchcounter=\count93
+\scratchdimen=\dimen109
 \scratchbox=\box26
-\nofMPsegments=\count90
-\nofMParguments=\count91
+\nofMPsegments=\count94
+\nofMParguments=\count95
 \everyMPshowfont=\toks15
-\MPscratchCnt=\count92
-\MPscratchDim=\dimen108
-\MPnumerator=\count93
+\MPscratchCnt=\count96
+\MPscratchDim=\dimen110
+\MPnumerator=\count97
 \everyMPtoPDFconversion=\toks16
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 37.
+(Font)              <14.4> on input line 38.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 37.
+(Font)              <7> on input line 38.
  <pictures/Alan_Turing_photo.jpg, id=1, 42.75975pt x 53.4798pt>
 File: pictures/Alan_Turing_photo.jpg Graphic file (type jpg)
 
@@ -129,7 +149,7 @@ File: pictures/Alan_Turing_photo.jpg Graphic file (type jpg)
 <use pictures/Alan_Turing_photo.jpg>
 File: pictures/Alan_Turing_photo.jpg Graphic file (type jpg)
  <use pictures/Alan_Turing_photo.jpg>
-Overfull \hbox (69.72002pt too wide) in paragraph at lines 37--37
+Overfull \hbox (69.72002pt too wide) in paragraph at lines 38--38
  [][] 
  []
 
@@ -137,9 +157,33 @@ Missing character: There is no Ã in font cmr10!
 Missing character: There is no ¤ in font cmr10!
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
- <./pictures/Alan_Turing_photo.jpg>] [2
+ <./pictures/Alan_Turing_photo.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 52--57
 
-]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--57
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 76--77
+
+ []
+
+[2
+
+] [3]
+Underfull \hbox (badness 10000) in paragraph at lines 102--103
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 102--103
+
+ []
+
 Missing character: There is no Ã in font cmbx12!
 Missing character: There is no ¶ in font cmbx12!
 Missing character: There is no Ã in font cmbx12!
@@ -164,76 +208,86 @@ Missing character: There is no Ã in font cmr12!
 Missing character: There is no ¤ in font cmr12!
 Missing character: There is no Ã in font cmr12!
 Missing character: There is no ¤ in font cmr12!
-
-Underfull \hbox (badness 10000) in paragraph at lines 88--99
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 88--99
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 105--106
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 127--132
 
  []
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 107.
+(Font)              <12> on input line 133.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 107.
+(Font)              <8> on input line 133.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 107.
+(Font)              <6> on input line 133.
 
-Overfull \hbox (94.01718pt too wide) in paragraph at lines 107--112
+Overfull \hbox (94.01718pt too wide) in paragraph at lines 133--138
 [][] 
  []
 
-<pictures/Bigram.png, id=14, 534.99875pt x 287.0725pt>
+<pictures/Bigram.png, id=20, 534.99875pt x 287.0725pt>
 File: pictures/Bigram.png Graphic file (type png)
 
 <use pictures/Bigram.png>
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<pictures/Bigram2.png, id=16, 534.99875pt x 287.0725pt>
+<pictures/Bigram2.png, id=22, 534.99875pt x 287.0725pt>
 File: pictures/Bigram2.png Graphic file (type png)
 
 <use pictures/Bigram2.png>
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+! LaTeX Error: There's no line here to end.
 
-[3] <pictures/machine_learning.png, id=21, 475.7775pt x 26.0975pt>
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.162 \\
+        
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.163 
+      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[5 <./pictures/Bigram.png> <./pictures/Bigram2.png>]
+<pictures/machine_learning.png, id=29, 475.7775pt x 26.0975pt>
 File: pictures/machine_learning.png Graphic file (type png)
 
-<use pictures/machine_learning.png> [4 <./pictures/Bigram.png> <./pictures/Bigr
-am2.png> <./pictures/machine_learning.png (PNG copy)>] [5]
-<pictures/histogram.pdf, id=30, 506.89375pt x 394.47375pt>
+<use pictures/machine_learning.png> [6 <./pictures/machine_learning.png (PNG co
+py)>] [7] <pictures/histogram.pdf, id=37, 506.89375pt x 394.47375pt>
 File: pictures/histogram.pdf Graphic file (type pdf)
 
-<use pictures/histogram.pdf> [6] [7 <./pictures/histogram.pdf>]
+<use pictures/histogram.pdf> [8] [9 <./pictures/histogram.pdf>]
 (./ai14-report-template.bbl
 Missing character: There is no Ã in font cmr12!
 Missing character: There is no § in font cmr12!
-) [8] (./ai14-report-template.aux) ) 
+) [10] (./ai14-report-template.aux) ) 
 Here is how much of TeX's memory you used:
- 1533 strings out of 493848
- 19102 string characters out of 1152823
- 74432 words of memory out of 3000000
- 4830 multiletter control sequences out of 15000+50000
+ 1693 strings out of 493848
+ 21308 string characters out of 1152823
+ 76318 words of memory out of 3000000
+ 4984 multiletter control sequences out of 15000+50000
  9416 words of font info for 33 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
  32i,16n,43p,910b,361s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/share/texmf-texlive/fonts/type1/publi
-c/amsfonts/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
-cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pf
-b></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/shar
-e/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texmf-texl
-ive/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on ai14-report-template.pdf (8 pages, 183688 bytes).
+</usr/share/texmf-texlive/fonts/type1/publ
+ic/amsfonts/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts
+/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.p
+fb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/sha
+re/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texmf-tex
+live/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on ai14-report-template.pdf (10 pages, 191537 bytes).
 PDF statistics:
- 66 PDF objects out of 1000 (max. 8388607)
+ 72 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
