@@ -6,6 +6,7 @@
 \usepackage{fancyhdr}
 \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{natbib}
+\usepackage{subfigure}
 \graphicspath{{pictures/}}
 
 \title{Carl Bildt Tweets: A comparison of regular and constrained Markov chain for text generation}
@@ -48,7 +49,8 @@ Skriv sist, när vi vet vad vi har skrivit om (y)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction (1--2 pages)}
-\label{sec:intro}
+\label{sec:intro}'
+\textbf{What is the problem and why is it important? \\ What will the reader get out of it? \\ Present specific results \\ Don't go into detail \\ }\\\\
 This paper aims to develop an understanding on refining natural language text generation.
 Natural Language Generation (NLG) is an area of research within the field of Artificial Intelligence. 
 The aim is to generate text that is semantically correct in order to make communication with computer systems more natural and understandable for users.
@@ -71,38 +73,62 @@ We build upon the work by \citealp{McBarb} to implement our own constraints.
 
    
 \subsection{Contribution}
+\textbf{forklara for en datalog typ varfor det vi gjort ar vettigt.}\\
+
+We have implemented a unigram of part-of-speech on to a bigram in order to observe the difference in the result. 
+As mentioned above a problem with n-grams with to high n:s is that they will simply copy parts of the corpus if said corpus does not contain a large variation of similar sentences, 
+so that a given start of n words does not automatically lead to one sentence finish. i.e. a larger corpus is needed for larger n:s.
+To be able to keep a smaller and diverse corpus we applied the unigram ontop of the n-gram to allow the program to select words of a common word type order
+but perhaps not words that have occurred after each other naturally in the corpus. 
+
+Our main contribution to the field is that we have tried putting this unigram constraint upon the regular Markov chain and doing it for short message generation.
+The research area we base this paper on focus on generating text that fits a theme, or rhythm whereas we generalize the concept.
+
+
 A lot new research involves the constraining of Markov chains to produce text that fits different molds than just text generated from a corpus. 
 It is important to be able to generate text that is 
 
 \subsection{Outline}
-Bla bla bla bla bla bla bla Section~\ref{sec:relwork} bla bla bla bla 
-bla bla bla bla bla Section~\ref{sec:method} bla bla bla bla bla bla 
-bla bla bla bla bla bla bla bla bla bla bla Section~\ref{sec:exps}
-bla bla bla bla bla bla Section~\ref{sec:summary} bla bla bla bla bla
+We bring up the relation of our work to some other work in the field \cite{McBarb} in section~\ref{sec:relwork} and explain how that research has affected ours. 
+In section~\ref{sec:method} we then go through the details on how the algorithm works, 
+we also give examples to explain in detail what the difference between the two methods we are comparing. This is complemented with details regarding our specific
+implementation of the algorithm ni section~\ref{sec:impl}. The data from running the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}.
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related work (1--3 pages)}
 \label{sec:relwork}
+\textbf{It is here we show that we know the field well and present the reports that we have read}\\\\
 
 Our work on the constrained Markov models are built upon \cite{McBarb} work, 
-where the authors generated lyrics from different artists using Markov models \textbf{of the second grade (a bi-gram)} with constraints. 
-These were to be generated in a specific style and with a rhythm. 
-However those criteria were not necessary for our work but we utilized the knowledge of constrained Markov models from them.
-\\
-\\
-\\
+where the authors generated lyrics from different artists using Markov models with constraints. 
+These were to be generated in a specific style and with a rhythm, to simulate real lyrics from a large span of artists.
+They start in a standard fashion by building up a corpus of content that they want to imitate. 
+In their case they built up a corpus consiting of the collected work of each artist. 
+So when generating lyrics for bob dylan as an example, the corpus consisted of 7600 uniqe words, a total of 96 089 words and 12 408 verses.
+They proceeded with applying constraints on a bigram to meet their demands on the generated text to have a certain style and to rhyme.
+Some of the constraints they apply on their bigram is that some words need to have the same meter as in the original song, but also that the text generated
+needs to fit a part-of-speech template and a rhytmic template that comes from the song the newly generated lyrics is to be based on. 
+The templates are not generated by their algorithm, but rather handcrafted to get a proper result. Our take from this paper was to be able to apply constraints
+upon a bigram, or rather a Markov chain in general. Similarily we utilize a part-of-speech template of sorts, but we diverge a bit from this paper.
+
 \textbf{Saker vi behöver svara på i detta stycke:}\\
 Vad vet vi om hur dem använde constraints i sitt arbete? Vi verkar ju inte veta något om det eftersom vi bara gissar oss fram :D
 \\
 Har vi något mer att basera vårat arbete på? En vetenskaplig text är ju bra, men om vi läst fler så är ju det rätt bra.
 
+\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{My method (1--4 pages)}
 \label{sec:method}
-To show the method it is easier to consider the Markov chain to be of the first order, a so called unigram. This means in a limited corpus, for example: \\
+Our method that forms the basis of this paper is generating twitter messages with the use of both Markov chains and constrained Markov chains and to compare the two methods with each other.
+The theory is that constraining an Markov chain will yield better and more diverse text being generated. 
+In section~\ref{sec:exps} where we explain our experiments and data we try out different orders of the Markov chain, 
+for the sake of explanation we assume a first order Markov chain is used to explain how the method works. 
+In a limited corpus such as this one: \\
 
 \begin{tabular}{r | l}
 ``Rolf has a dog.`` & Noun $\to$ verb $\to$ singular quantifier $\to$ noun \\
@@ -110,32 +136,47 @@ To show the method it is easier to consider the Markov chain to be of the first 
 ``Rolf can not walk his dog.`` & Noun $\to$ modal $\to$ adverb $\to$ verb $\to$ pronoun $\to$ noun \\
 \end{tabular}
 
-Would generate a chain that looks like the following, with the edges being the probabilities for the specific transitions:
+This corpus generates a Markov chain that looks like figure 1a, with the edges being the probabilities for the specific transitions. 
+In the figure the specific part-of-speech is included in the states beneath the words from the corpus. 
+If we then add constraints from a transition matrix, built up from POS-analysis of the same corpus we are given the new chain that is seen in figure 1b.
+
 
 \begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.5\linewidth]{Bigram.png}
-  \caption{Unigram of the limited corpus}
-\end{figure}
+  \hfill
+  \subfigure[Unigram of the limited corpus]{\includegraphics[width=0.49\linewidth]{Bigram.png}}
+  \hfill
+  \subfigure[Unigram with constraints applied]{\includegraphics[width=0.49\linewidth]{Bigram2.png}}
+  \hfill
+  \caption{Unigrams}
+ \end{figure}
 
-In the figure the specific part-of-speech is included in the states. If we now add constraints from a transition matrix (built up from POS-analysis of the corpus) from the same corpus we are given this new chain:
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.5\linewidth]{Bigram2.png}
-  \caption{Unigram with constraints applied}
-\end{figure}
 
-We see here that since both ''has`` and ''owns`` are verbs they are more probable to occur than ''can``, this is reflected in the new edges. 
+
+We can see in figure 1b that since both ''has`` and ''owns`` are verbs they are more probable to occur than ''can``, this is reflected in the new edges. 
 This happens because the part-of-speech ''verb`` is more likely to follow NNP according to our transition matrix, and thus ''has`` and ''owns``, who are 
-both verbs become even more likely to follow NNP (Rolf).
+both verbs become even more likely to follow NNP (Rolf). This method can then be further applied to a bigram, a trigram or any n-grams that follows. 
+Our method however will only have an unigram for the transition matrix, even if the Markov chain of words from the corpus is longer, 
+the transitions are only observed with one previous state in consideration.
 
-In i a similiar way we will weigh in the constrants from the transition matrix in to a bi-gram, 
-to weigh in the probability for a specific part-of-speech to follow as well as a specific word.
 \\
-\textbf{Corpus:}\\
-In order to iterate tweets for a specific twitter user, we first discussed the problem regarding the semantical corectness of a generalized tweet.
-The average level is according to our own experience far from 
+\\
 
+\textbf{Corpus:}\\
+In order to generate tweets, we first discussed the problem regarding the semantical corectness of a generalized tweet.
+The average level is according to our own experience far from sematically correct, which isn't a problem in understadabillity for an experienced twitter user,
+but is a problem for our POS who would not recognize the words. Even if it would give it an ''unknown``-tag, we would not be able to predict any kind of results.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\linewidth]{machine_learning}
+  \caption{An example tweet}
+\end{figure}
+
+To solve this problem approximatily, we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in english.
+Our option fell on Carl Bildt, former foreight minister of Sweden, because of his active use of Twitter \textbf{Stor bokstav på Twitter, det är ju faktiskt ett namn?}, 
+that he tweets in english and that most of his tweets are in gramatically correct english.
+
+\newpage
 The Markov chain is built up with the use of n-grams of the second order, so called bigrams. This means in a limited corpus like for example
 ``Rolf has a dog.`` 
 ``Rolf owns a dog.``
