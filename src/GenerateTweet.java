@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 
 public class GenerateTweet {
@@ -24,20 +25,24 @@ public class GenerateTweet {
 		indTime = System.currentTimeMillis();
 		
 		System.out.println("Starting to generate tweets");
-		String tweet;
-		indTime = System.currentTimeMillis();
-		tweet = tg.generate(null);
-		System.out.println("With NGram [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);
+		Scanner sc = new Scanner(System.in);
+		System.out.println("\nPress ENTER to proceed (q + ENTER to quit).\n");
+        while (sc.hasNextLine()) {
+            if (sc.nextLine().equals("q")) {
+                break;
+            }
+			String tweet;
+			indTime = System.currentTimeMillis();
+			tweet = tg.generate(null);
+			System.out.println("With NGram [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);
+			
+			indTime = System.currentTimeMillis();
+			tweet = tg.generate(tM.getMatrix());
+			System.out.println("With TM [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);	
+			
+			System.out.println("\nPress ENTER to proceed (q + ENTER to quit).\n");
+        }
 		
-		indTime = System.currentTimeMillis();
-		tweet = tg.generate(tM.getMatrix());
-
-		System.out.println("With TM [" + (System.currentTimeMillis() - indTime) + " ms]:\t" + tweet);	
 		System.out.println("Total time taken: " + (System.currentTimeMillis() - startTime) + " ms");
-	}
-	
-	public static String getRandomWord(String type, HashMap<String, ArrayList<String>> dictionary) {
-		ArrayList<String> words = dictionary.get(type);
-		return words.get((int) (Math.random() * words.size()));
 	}
 }
