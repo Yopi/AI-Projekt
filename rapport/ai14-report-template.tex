@@ -186,6 +186,14 @@ that he tweets in english and that most of his tweets are in gramatically correc
 \label{sec:impl}
 The implementation relied on a Part-of-Speech tagger from Stanford's Natural Language Processsing group.
 
+We start by collecting data, in the form of tweets, by a target person, Carl Bildt, to be used as the corpus of our tweet generator.
+
+Each tweet is run through Stanford's speech tagger to get the lexical class of each word depending on context.
+We then use these lexical classes as states for the transition matrix, more specifically they're used to see what lexical class usually follows any given lexical class or terminates a sentence.
+
+While iterating through the gathered data we store what word follows any given two words, including sentence terminating symbols such as '.' or '!' and store it as a bigram.
+
+When generating tweets two methods are used, first the bigram gets to select which words to use entirely on its own digression (Markov chain). Then the process is repeated but this time the bigram is constrained by which lexical class of words it is allowed to choose from, that class being whichever one the transition matrix has decided should follow (constrained Markov chain).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
