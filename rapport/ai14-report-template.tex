@@ -5,6 +5,7 @@
 \usepackage{graphics}
 \usepackage{fancyhdr}
 \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{amsmath}
 \usepackage{natbib}
 \usepackage{subfigure}
 \graphicspath{{pictures/}}
@@ -200,18 +201,43 @@ When generating tweets two methods are used, first the bigram gets to select whi
 \section{Experimental results (1--4 pages)}
 \label{sec:exps}
 
-Some images here and stuff would be nice.
+\subsection{Experimental setup}
+We generate 10000 tweets with a length of between 30 and 140 characters using both the Markov chain and the constrained Markov chain. 
 
-\subsection{Experiemntal setup}
-Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
-bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
-bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
+Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a bigram three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet.
 
-\subsection{Experiment ...}
+\subsection{Experiment}
 
-Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
-bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
-bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
+For example purposes we added these sentences to the limited corpus mentioned under \textit{My Method}:
+
+\begin{tabular}{l}
+``Mufasa is a dog with a purple tail.``\\
+``Mufasa owns a yellow cat.``\\
+``Jessica can not eat a yellow dog with a pink tail.``\\
+``Steve has a shirt with a purple tail.``\\
+\end{tabular}
+
+% Räkna manuellt med limited corpus
+\textbf{Example 1:} ``Rolf can not eat a yellow cat.``
+	
+It first matches "can not eat a yellow" since it is the largest continuous match, this reduces uniqueness by 2. What is left is "Rolf" and "cat" since both are shorter than three words we stop here.
+
+Thus this sentences uniqueness is $\frac{9 - 2}{9} \approx$ 78\%.
+
+\textbf{Example 2:} ``Rolf has a shirt with a yellow dog with a pink tail.``
+	
+The first match is "a yellow dog with a pink tail", reducing uniqueness by 4. Remaining is "Rolf has a shirt with" which matches "has a shirt with", further reducing uniqueness by 1. Only "Rolf" is left over thus we stop. 
+
+Thus this sentence has a uniqueness of $\frac{12 - (4 + 1)}{12} \approx$ 58\%.
+
+% ta upp failure rate (2 per 10000), bara constrained kan missa
+
+\subsubsection{Uniqueness based on words in tweet}
+ % Unikhet minskar när längd ökar men de har lika värden, förutom de spikes som markov kedjan får i början och slutet
+
+\subsubsection{Number of tweets based on uniqueness}
+
+% Även här lika, markov chain har mer värden som har låg unikhet än constrained och markov chain har fler värden som har hög unikhet
 
 \begin{figure}
 \centering
@@ -225,20 +251,6 @@ is large enough to read and that the axes are labelled.}
 Bla bla bla bla bla Figure~\ref{fig:histogram} bla bla bla bla bla bla 
 bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
 bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
-
-\begin{table}
-\begin{center}
-\begin{tabular}{|c|c|c|}
-\hline
-Bla bla & Bla bla & Bla bla \\ \hline
-42 & 42 & 42 \\ \hline
-42 & 42 & 42 \\ \hline
-\end{tabular}
-\caption{A description that makes browsing the paper easy and clearly 
-describes what is in the table.}
-\label{tab:results}
-\end{center}
-\end{table}
 
 Bla bla bla bla bla Table~\ref{tab:results} bla bla bla bla bla bla 
 bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla 
