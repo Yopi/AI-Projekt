@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -9,8 +11,8 @@ import java.util.Comparator;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class Statistics {
-	private static final int tweets = 1000;
-	private final int maxLength = 90;
+	private static final int tweets = 10000;
+	private final int maxLength = 130;
 	private final int minLength = 30;
 	private final int nGramLength = 2;
 	MaxentTagger tagger = new MaxentTagger(Constants.taggerPath);
@@ -28,11 +30,28 @@ public class Statistics {
 		long timeNow = System.currentTimeMillis();
 		String text = getText();
 		long endTime  = System.currentTimeMillis();
-		System.err.println("done [" + df.format(((double) (endTime - timeNow) / 100)) + " sec]");
-		
+		System.err.println("done [" + df.format(((double) (endTime - timeNow) / 1000)) + " sec]");
 		
 		double[] NGramScore = new double[tweets];
 		double[] tMScore = new double[tweets];
+		
+		// figure 1
+		double[] NGramCorrectnessBasedOnWordsInTweet = new double[30];
+		double[] tMCorrectnessBasedOnWordsInTweet = new double[30];
+		
+		int[] NGramWordsInTweet = new int[30];
+		int[] tMWordsInTweet = new int[30];
+		
+		// figure 2
+		int[] NGramNumOfTweetsBasedOnWordsInTweet = new int[30];
+		int[] tMNumOfTweetsBasedOnWordsInTweet = new int[30];
+		
+		// figure 3
+		int[] NGramNumOfTweetsBasedOnCorrectness = new int[100];
+		int[] tMNumOfTweetsBasedOnCorrectness = new int[100];
+		
+		
+		
 		
 		System.out.println("Starting statistical analysis");
 		timeNow = System.currentTimeMillis();
@@ -41,34 +60,66 @@ public class Statistics {
 		int minLength = Integer.MAX_VALUE;
 		int over = 0;
 		int under = 0;
+		int tweetLength;
+		int wordsInTweet;
+		double tweetScore;
         for (int i = 0; i < tweets; i++) {
-        	//System.out.print(df.format(((double) (i) / tweets) * 100) + "% done...\r"); // \r does not work in Eclipse (bug from 2004).
+        	//System.out.print(df.format(((double) (i) / tweets) * 100) + "% done...\r"); // \r does not work in Eclipse (bug since 2004).
         	tweet = gt.getTweetNGram();
-        	maxLength = Math.max(tweet.length(), maxLength);
-        	minLength = Math.min(tweet.length(), minLength);
-        	if (tweet.length() <= this.maxLength) {
+        	tweetScore = analyseTweet(tweet, text, acceptedLength) * 100;
+        	NGramScore[i] = tweetScore;
+        	wordsInTweet = tweet.split("\\s").length;
+        	
+        	// Första figuren.
+        	NGramCorrectnessBasedOnWordsInTweet[wordsInTweet-1] += tweetScore;
+        	NGramWordsInTweet[wordsInTweet-1]++;
+        	
+        	// Andra figuren.
+        	NGramNumOfTweetsBasedOnWordsInTweet[wordsInTweet-1]++;
+        	
+        	// Tredje figuren.
+        	NGramNumOfTweetsBasedOnCorrectness[Math.max((int) Math.round(tweetScore) - 1, 0)]++;
+        	
+        	
+        	tweetLength = tweet.length();
+        	maxLength = Math.max(tweetLength, maxLength);
+        	minLength = Math.min(tweetLength, minLength);
+        	if (tweetLength <= this.maxLength) {
         		under++;
-        	} else if (tweet.length() > this.maxLength) {
+        	} else if (tweetLength > this.maxLength) {
         		over++;
         	}
+        	
         	//System.out.println("With NGram:\t" + tweet);
-			double tweetScoreNGram = analyseTweet(tweet, text, acceptedLength);
-			//System.out.println("Score NGram: " + df.format(tweetScoreNGram * 100) + "%");
+			
+			//System.out.println("Score NGram: " + df.format(tweetScore) + "%");
+			//System.out.println("Number of words in tweet: " + wordsInTweet);
 			
 			tweet = gt.getTweetTM();
-			maxLength = Math.max(tweet.length(), maxLength);
-        	minLength = Math.min(tweet.length(), minLength);
+			tweetScore = analyseTweet(tweet, text, acceptedLength) * 100;
+			tMScore[i] = tweetScore;
+			wordsInTweet = tweet.split("\\s").length;
+			
+			// Första figuren.
+        	tMCorrectnessBasedOnWordsInTweet[wordsInTweet-1] += tweetScore;
+        	tMWordsInTweet[wordsInTweet-1]++;
+        	
+        	// Andra figuren.
+        	tMNumOfTweetsBasedOnWordsInTweet[wordsInTweet-1]++;
+        	
+        	// Tredje figuren.
+        	tMNumOfTweetsBasedOnCorrectness[Math.max((int) Math.round(tweetScore) - 1, 0)]++;
+			
+			tweetLength = tweet.length();
+			maxLength = Math.max(tweetLength, maxLength);
+        	minLength = Math.min(tweetLength, minLength);
         	if (tweet.length() <= this.maxLength) {
         		under++;
         	} else if (tweet.length() > this.maxLength) {
         		over++;
         	}
 			//System.out.println("With TM:\t" + tweet);
-			double tweetScoreTM = analyseTweet(tweet, text, acceptedLength);
 			//System.out.println("Score TM: " + df.format(tweetScoreTM * 100) + "%");
-			
-			NGramScore[i] = tweetScoreNGram;
-			tMScore[i] = tweetScoreTM;
         }
         endTime  = System.currentTimeMillis();
         System.out.println("Analyzed " + tweets + " tweets [" + df.format(((double) (endTime - timeNow) / 1000)) + " sec]");
@@ -77,8 +128,77 @@ public class Statistics {
         System.out.println("Shortest tweet:\t" + minLength + " characters");
         System.out.println("Number of tweets that is longer than " + this.maxLength + " characters:\t" + over);
         System.out.println("Number of tweets that is shorter than " + this.maxLength + " characters:\t" + under);
-        System.out.println("NGram average score:\t" + df.format((sumArray(NGramScore) / tweets) * 100) + "%");
-        System.out.println("TM average score:\t" + df.format((sumArray(tMScore) / tweets) * 100) + "%");
+        System.out.println("NGram average score:\t" + df.format((sumArray(NGramScore) / tweets)) + "%");
+        System.out.println("TM average score:\t" + df.format((sumArray(tMScore) / tweets)) + "%");
+        
+        
+        for (int i = 0; i < NGramWordsInTweet.length; i++) {
+        	if (NGramWordsInTweet[i] != 0) {
+        		NGramCorrectnessBasedOnWordsInTweet[i] /= NGramWordsInTweet[i];
+        	}
+        	if (tMWordsInTweet[i] != 0) {
+        		tMCorrectnessBasedOnWordsInTweet[i] /= tMWordsInTweet[i];
+        	}
+        }
+        
+        System.out.println("\nSaving data to files.");
+        timeNow = System.currentTimeMillis();
+        writeArrayToFile(NGramScore, "NGramScore.data");
+        writeArrayToFile(tMScore, "tMScore.data");
+        writeArrayToFile(NGramCorrectnessBasedOnWordsInTweet, "NGramCorrectnessBasedOnWordsInTweet.data");
+        writeArrayToFile(tMCorrectnessBasedOnWordsInTweet, "tMCorrectnessBasedOnWordsInTweet.data");
+        writeArrayToFile(NGramNumOfTweetsBasedOnWordsInTweet, "NGramNumOfTweetsBasedOnWordsInTweet.data");
+        writeArrayToFile(tMNumOfTweetsBasedOnWordsInTweet, "tMNumOfTweetsBasedOnWordsInTweet.data");
+        writeArrayToFile(NGramNumOfTweetsBasedOnCorrectness, "NGramNumOfTweetsBasedOnCorrectness.data");
+        writeArrayToFile(tMNumOfTweetsBasedOnCorrectness, "tMNumOfTweetsBasedOnCorrectness.data");
+        endTime = System.currentTimeMillis();
+        System.out.println("All data saved to files [" + df.format(((double) (endTime - timeNow))) + " ms]");
+	}
+	
+	private void writeArrayToFile(double[] array, String fileName) {
+		try {
+	        // Save sentences to file.
+	        File theFile = new File("data/" + fileName);
+	        theFile.createNewFile();
+	        FileWriter fw = new FileWriter("data/" + fileName);
+	        
+	        fw.write("[");
+	        for (int i = 0; i < array.length; i++) {
+	        	if (i < array.length - 1) {
+	        		fw.write(array[i] + " ");
+	        	} else {
+	        		fw.write(array[i] + "");
+	        	}
+	        }
+	        fw.write("];");
+	        
+	        fw.close();
+    	} catch (IOException e) {
+    		System.err.println("File saving error. File: " + fileName);
+    	}
+	}
+	
+	private void writeArrayToFile(int[] array, String fileName) {
+		try {
+	        // Save sentences to file.
+	        File theFile = new File("data/" + fileName);
+	        theFile.createNewFile();
+	        FileWriter fw = new FileWriter("data/" + fileName);
+	        
+	        fw.write("[");
+	        for (int i = 0; i < array.length; i++) {
+	        	if (i < array.length - 1) {
+	        		fw.write(array[i] + " ");
+	        	} else {
+	        		fw.write(array[i] + "");
+	        	}
+	        }
+	        fw.write("];");
+	        
+	        fw.close();
+    	} catch (IOException e) {
+    		System.err.println("File saving error. File: " + fileName);
+    	}
 	}
 	
 	private double sumArray(double[] array) {
