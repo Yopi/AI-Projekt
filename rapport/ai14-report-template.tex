@@ -7,7 +7,12 @@
 \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{natbib}
 \usepackage{subfigure}
+\usepackage{svg}
 \graphicspath{{pictures/}}
+
+% SVG Options
+\setsvg{inkscape = inkscape -z -D}
+\setsvg{svgpath = pictures/}
 
 \title{Carl Bildt Tweets: A comparison of regular and constrained Markov chain for text generation}
 \author{\hspace*{-0.5cm}
@@ -120,6 +125,11 @@ upon a bigram, or rather a Markov chain in general. Similarily we utilize a part
 % Nisse skriv under här
 
 % Jesper skriv under här
+In \cite{shannon48} Shannon goes through the first basic steps in how to naively generate text from a corpus with Markov chains. 
+He explains in depth how Markov chains can be used to generate real sounding English words from letters and also sentences from words.
+His approach was novel at the time but it is a staple in modern text generation, and also in this project it is used as one of the corner stones in the algorithm.
+
+
 
 %% Saker vi behöver svara på i detta stycke:
 % Vad vet vi om hur dem använde constraints i sitt arbete? Vi verkar ju inte veta något om det eftersom vi bara gissar oss fram :D
@@ -148,12 +158,11 @@ This corpus generates a Markov chain that looks like figure 1a, with the edges b
 In the figure the specific part-of-speech is included in the states beneath the words from the corpus. 
 If we then add constraints from a transition matrix, built up from POS-analysis of the same corpus we are given the new chain that is seen in figure 1b.
 
-
 \begin{figure}[h!]
   \hfill
-  \subfigure[Unigram of the limited corpus]{\includegraphics[width=0.49\linewidth]{Bigram.png}}
+  \subfigure[Unigram of the limited corpus]{\includegraphics[width=0.49\linewidth]{Bigram.pdf}}
   \hfill
-  \subfigure[Unigram with constraints applied]{\includegraphics[width=0.49\linewidth]{Bigram2.png}}
+  \subfigure[Unigram with constraints applied]{\includegraphics[width=0.49\linewidth]{Bigram2.pdf}}
   \hfill
   \caption{Unigrams}
  \end{figure}
