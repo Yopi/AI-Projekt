@@ -1,0 +1,102 @@
+clf
+
+%% Uniqueness based on number of words in tweet
+x = [1:1:30];
+xMin = 6
+xMax = 18
+yMin = 0
+yMax = 90
+
+figure
+% Markov chain
+yM = [0.0 0.0 0.0 0.0 0.0 0.0 87.42857142857144 75.35545023696683 72.99223622247719 71.29514321295143 70.71803381620815 70.17564221603216 68.79345782131486 67.93486306439674 67.68749999999999 63.577586206896555 73.52941176470588 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0];
+subplot(2, 1, 1)
+bar(x, yM)
+axis([xMin xMax yMin yMax])
+title('Markov chain')
+xlabel('Number of words in tweet')
+ylabel('Uniqueness %')
+
+% Constrained Markov chain
+yCM = [0.0 0.0 0.0 0.0 0.0 0.0 82.53968253968256 78.17073170731707 73.72245663384969 71.99277543648405 71.39919458486779 70.7503019323671 69.24475524475558 69.5999313186814 66.81434599156121 65.41666666666667 64.70588235294117 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0];
+subplot(2, 1, 2)
+bar(x, yCM)
+axis([xMin xMax yMin yMax])
+title('Constrained Markov chain')
+xlabel('Number of words in tweet')
+ylabel('Uniqueness %')
+
+% Both
+figure
+plot(x, yM, 'r')
+hold on
+plot(x, yCM, 'g')
+xlabel('Number of words in tweet')
+ylabel('Uniqueness %')
+legend('Markov chain', 'Constrained Markov chain')
+hold off
+
+%{
+%% Number of tweets based on number of words in tweet
+x = [1:1:30]
+xMin = 5
+xMax = 20
+yMin = 0
+yMax = 30
+
+% Markov chain
+y = [0 0 0 0 0 0 0 1 7 14 19 27 20 9 1 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+subplot(3, 2, 3)
+bar(x, y)
+axis([xMin xMax yMin yMax])
+title('Markov chain')
+xlabel('Number of words in tweet')
+ylabel('Number of tweets')
+
+% Constrained Markov chain
+y = [0 0 0 0 0 0 1 4 11 12 25 24 14 8 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+subplot(3, 2, 4)
+bar(x, y)
+axis([xMin xMax yMin yMax])
+title('Constrained Markov chain')
+xlabel('Number of words in tweet')
+ylabel('Number of tweets')
+
+%}
+
+%% Number of tweets based on uniqueness
+hold on
+x = [1:1:100]
+xMin = 18
+xMax = 101
+yMin = 0
+yMax = 750
+
+figure
+% Markov chain
+yM = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 36 0 19 0 46 0 5 58 13 0 53 0 0 32 0 30 0 46 0 20 48 38 30 145 11 0 0 390 0 0 27 184 310 60 126 357 0 421 0 240 24 618 1 0 733 0 389 419 223 0 512 0 594 0 381 290 202 399 4 438 416 0 274 108 17 67 153 255 236 256 28 0 0 0 0 0 0 215];
+subplot(2, 2, 3)
+bar(x, yM)
+axis([xMin xMax yMin yMax])
+title('Markov chain')
+xlabel('Uniqueness %')
+ylabel('Number of tweets')
+
+% Constrained Markov chain
+yCM = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 1 0 11 0 18 0 34 0 1 54 6 0 60 0 0 31 0 22 0 47 0 26 35 47 29 120 19 0 0 366 0 0 29 197 352 46 90 332 0 406 0 244 20 565 2 0 726 0 344 467 194 0 560 0 589 1 388 317 170 427 4 432 453 0 251 105 19 64 176 230 277 278 32 0 0 0 0 0 0 284];
+subplot(2, 1, 2)
+bar(x, yCM)
+axis([xMin xMax yMin yMax])
+title('Constrained Markov chain')
+xlabel('Uniqueness %')
+ylabel('Number of tweets')
+
+% Both
+figure
+plot(x, yM, 'r')
+hold on
+plot(x, yCM, 'g')
+xlabel('Uniqueness %')
+ylabel('Number of tweets')
+legend('Markov chain', 'Constrained Markov chain')
+hold off
