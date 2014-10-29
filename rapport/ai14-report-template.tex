@@ -324,13 +324,20 @@ Even though we could not mechanically analyse semantic correctness of our tweets
 \section{Summary and Conclusions (0.5--1 page)}
 \label{sec:summary}
 % Vad har vi kommit fram till?
-We compared generating natural language with a native bigram from our corpus with using a constrained markov chain with a bigram to generate tweets seeming to origin from a specific user.
-In the result we can see that using a constrained markov chain has a slight advantage over simply using a bigram in generating a diversity of content. % Behövs diskussion om hur pass de verkade vara från CB himself.
+We compared generating natural language with a native bigram from our corpus with using a constrained Markov chain of order 2 to generate tweets seeming to origin from a specific person, which in our experiment was Carl Bildt. 
+The tweets should thus be semantically correct and have a somewhat meaningful content.
+In the result we can see that using a constrained Markov chain has a slight advantage over simply using a bigram in generating a diversity of content. 
+However, there was seemingly no difference at all in the quality of the content. 
+They did seem to be from Carl Bildt, since the topics of the tweets were affected by the words in his tweets. 
+A lot of the generated tweets had a political theme where conflicts were discussed and political situations in different regions of the world. 
+
+
 % Vad bidrog det med?
-We were able to show that with a slight change in implementation we could slightly change the outcome of results. 
+We were able to show that applying constraints on a bigram made little difference rather than just using a bigram. We show that our approach adds a lot of work with small gain, and the gain gotten results in mostly nonsensical text. When the diversity in the generated tweet increased so did the quality decrease.
+
 % Hur kan våra resultat förbättras/förändras?
-The constrained matrix only uses a unigram, if it would use a bigram for it's POS constraints, perhaps the outcome would have been different. Or less diversity. What do we know. We need logic here.
-Using i bigram for constraints would perhaps give a more stable result and thus beeing more similar to only using a bigram. But since it's POS, i have no idea.s
+The constrained matrix only uses a unigram, if it would use a bigram for it's POS constraints, perhaps the outcome would have been different. The outcome would probably be affected by it, however it is hard to say whether it would improve the results a lot. If the Markov chain was constrained by another property than the sequence of POS in Carl's tweets the results could possibly be different. An alternative could be to generate a template with topics that divide the tweet into parts and let that be the constraint of the Markov chain instead.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
