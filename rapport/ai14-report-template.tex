@@ -49,12 +49,7 @@ viktorbj@kth.se & jbrann@kth.se & dduberg@kth.se & jakobti@kth.se \\
 \thispagestyle{fancy}
 
 \begin{abstract}
-This paper explores the difference in result when generating twitter messages that seem to come from a former Swedish foreign minister, Carl Bildt, using two natural language generation based techniques that build on each other.
-The outcome of the methods were indeed tweets seeming to origin from Carl Bildt with a subject that circulated around foreign politics. 
-The most reliable ones however were mainly copied directly from his feed, a problem we headed out to solve with this method.
-We used Markov chains with and without constraints to generate tweets and we give suggestions on improvement of our technique.
-
-
+Skriv sist, när vi vet vad vi har skrivit om (y)
 \end{abstract}
 
 
@@ -114,6 +109,7 @@ we also give examples to explain in detail what the difference between the two m
 This is complemented with details regarding our specific implementation of the algorithm in section~\ref{sec:impl}. 
 The data from running the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}.
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related work (1--3 pages)}
@@ -125,7 +121,7 @@ The data from running the algorithm is explained, reviewed and evaluated in sect
 % Har vi något mer att basera vårat arbete på? En vetenskaplig text är ju bra, men om vi läst fler så är ju det rätt bra.
 
 % Jesper skriv under härate sentenses from words.
-In \cite{shannon48} Shannon goes through the first basic steps in how to naively generate text from a corpus with Markov chains. 
+\cite{shannon48} goes through the first basic steps in how to naively generate text from a corpus with Markov chains. 
 He explains in depth how Markov chains can be used to generate real sounding English words from letters and also sentences from words. 
 We implemented n-grams and tried different orders of them which according to Shannon would generate output more similar to the content of the corpus with the higher orders. 
 The difference between the different orders of Markov chains lies in how many preceding states that are taken in consideration.
@@ -147,13 +143,15 @@ They use POS templates to fit the correct poetic metre, these templates are not 
 Our take from this paper was to be able to apply constraints upon a bigram, or rather a Markov chain in general. Similarily we utilize a part-of-speech template of sorts, but we diverge a bit from this paper by not handcrafting them and instead letting our algorithm generate them based on the corpus.
 
 
+\newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{My method (1--4 pages)}
 \label{sec:method}
 Our method that forms the basis of this paper is generating Twitter messages with the use of both Markov chains and constrained Markov chains and to compare the two methods with each other.
 The theory is that constraining an Markov chain will yield better and more diverse text being generated. 
-In section~\ref{sec:exps} where we explain our experiments and data we try out a different order of the Markov chain, 
+In section~\ref{sec:exps} where we explain our experiments and data we try out different orders of the Markov chain, 
 for the sake of explanation we assume a first order Markov chain is used to explain how the method works. 
 In a limited corpus such as this one: \\
 
@@ -341,12 +339,12 @@ A lot of the generated tweets had a political theme where conflicts were discuss
 
 
 % Vad bidrog det med?
-We were able to show that applying constraints on a bigram made little difference rather than just using a bigram. We show that our approach adds a lot of work with small gain, however the gain results in mostly nonsensical text. When the diversity in the generated tweet increased it made the quality of the tweet decrease.
+We were able to show that applying constraints on a bigram made little difference rather than just using a bigram. We show that our approach adds a lot of work with small gain, and the gain gotten results in mostly nonsensical text. When the diversity in the generated tweet increased so did the quality decrease.
 
 % Hur kan våra resultat förbättras/förändras?
 The constrained matrix only uses a unigram, if it would use a bigram for it's POS constraints, perhaps the outcome would have been different. The outcome would probably be affected by it, however it is hard to say whether it would improve the results a lot. If the Markov chain was constrained by another property than the sequence of POS in Carl's tweets the results could possibly be different. An alternative could be to generate a template with topics that divide the tweet into parts and let that be the constraint of the Markov chain instead.
 
-\newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{plainnat}
