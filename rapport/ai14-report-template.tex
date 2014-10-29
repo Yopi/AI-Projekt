@@ -62,43 +62,44 @@ Skriv sist, när vi vet vad vi har skrivit om (y)
 % Dont go into detail 
 This paper aims to develop an understanding on refining natural language text generation.
 Natural Language Generation (NLG) is an area of research within the field of Artificial Intelligence. 
-The aim is to generate text that is semantically correct in order to make communication with computer systems more natural and understandable for users.
+The purpose of NLG is to generate text that is semantically correct in order to make communication with computer systems more natural and understandable for users.
 
 Within this paper we show the difference in quality of two different approaches to text generation. 
 One of these approaches is using Markov chains or more commonly known as n-grams. 
 These n-grams take n words in sequence and uses a corpus of text to guess what the most probable next word is. 
-Using a larger n means that more text is copied straight from the corpus, 
-however this also means that there is a higher likelihood that the text being generated is meaningful.
+Using a larger n in an n-gram means that more text is copied straight from the corpus, 
+however this also means that there is a higher likelihood that the text being generated is meaningful. 
+% Givet att corpus är meningsfullt
 We will contrast this method with using constrained Markov chains. 
 The main constraint of the Markov chains is that two words following each other will have the same sequence of part-of-speech as the corpus.
 Part-of-speech is a concept within NLG that divides a text into the different linguistical categories of the words within it.
 
 We aim to show that using this constraint upon the Markov chain, sentences will have a greater diversity but still be as semantically correct as just using a n-gram.
 Since the problem with larger n:s within n-grams is that text is copied straight from the corpus, 
-the constraint will help us create sematically correct scentences without taking word sequences straight from the corpus.
+the constraint will hopefully help us create semantically correct sentences with a greater diversity from the corpus.
 
 To be able to show differences in these two approaches we generate Twitter messages, so called tweets. 
-We build upon the work by \citealp{McBarb} to implement our own constraints.
-
+We build upon the work by \cite{shannon48} for the theory of implementing an n-gram, a description on generating and parsing corpuses by \citep{Corpus}
+and the work by \citealp{McBarb} to implement our own constraints on the n-gram.
    
 \subsection{Contribution}
 % Förklara för en datalog varför det vi gjort ar vettigt.
 
-We have implemented a unigram of part-of-speech on to a bigram in order to observe the difference in the result. 
+We have implemented a unigram of part-of-speech (POS) on to a bigram in order to observe the difference in the result. 
 As mentioned above a problem with n-grams with to high n:s is that they will simply copy parts of the corpus if said corpus does not contain a large variation of similar sentences, 
 so that a given start of n words does not automatically lead to one sentence finish. i.e. a larger corpus is needed for larger n:s.
-To be able to keep a smaller and diverse corpus we applied the unigram ontop of the n-gram to allow the program to select words of a common word type order
-but perhaps not words that have occurred after each other naturally in the corpus. 
+To be able to keep a smaller and diverse corpus we applied the unigram of POS tags on top of the n-gram to allow the program to select words of a common word type order and with a greater diversity than naturally occurs in the corpus.
 
 Our main contribution to the field is that we have tried putting this unigram constraint upon the regular Markov chain and doing it for short message generation.
-The research area we base this paper on focus on generating text that fits a theme, or rhythm whereas we generalize the concept.
+The research area we base this paper on focus on generating text that fits a theme or rhythm whereas we generalize the concept by creating text that is not constrained by a pre-written sequence of POS. 
+Our approach is that we let the model be trained with two types of information, thus our contribution to the field lies in examining how the combination of these two approaches improves the general natural language generation.
 
 
-A lot new research involves the constraining of Markov chains to produce text that fits different molds than just text generated from a corpus. 
-It is important to be able to generate text that is 
+%A lot new research involves the constraining of Markov chains to produce text that fits different molds than just text generated from a corpus. 
+%It is important to be able to generate text that is 
 
 \subsection{Outline}
-We bring up the relation of our work to some other work in the field \cite{McBarb} in section~\ref{sec:relwork} and explain how that research has affected ours. 
+We bring up the relation of our work to some other work in the field. \cite{McBarb} in section~\ref{sec:relwork} and explain how that research has affected ours. 
 In section~\ref{sec:method} we then go through the details on how the algorithm works, 
 we also give examples to explain in detail what the difference between the two methods we are comparing. This is complemented with details regarding our specific
 implementation of the algorithm ni section~\ref{sec:impl}. The data from running the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}.
