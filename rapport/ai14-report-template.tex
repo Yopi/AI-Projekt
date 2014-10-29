@@ -294,7 +294,7 @@ Once generated we analyse the tweets uniqueness by counting how many of the used
 Figure 6 makes this more obvious, if you look at the lower end the Markov chain has visible spikes on the lower end (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (82, 91 and 100 percent).
 
 \subsubsection{Actual content of tweet}
-Even though we could not mechanically analyse semantic correctness of our tweets we still looked at some of the tweets it generates.
+Even though we could not mechanically analyse semantic correctness of our tweets we still looked at some of the tweets it generates. We generated 5 example tweets, using both methods, for analysis.
 
 \textbf{Markov chain}
 
@@ -312,11 +312,17 @@ Even though we could not mechanically analyse semantic correctness of our tweets
 ``\selectlanguage{russian}Очевидно обострение экономической войны Russia is good.``\\
 ``Truly alarming development in Bosnia.``\\ % INTE helt kopierad
 ``Started the meeting in Brussels. Istanbul after a couple of grey suits as well.``\\
-``Advance in Kobane must certainly be stopped. Her contribution on behalf of EU.``\\
+``We have every reason to follow the different parts of Eastern Ukraine.``\\
 ``PM's Reinfeldt of Sweden. Most of our world. Looks worse than a dog.``
 \end{tabular}
 
+Occasionally the beginning and end of our generated tweets are semantically incorrect, this is caused by our corpus filtering as the preceding/subsequent element has been removed from the corpus.
 
+We do not filter languages so sometimes we get long strings of, for example, Russian that we cannot determine if they are semantically correct or not.
+
+Otherwise the subjects of the generated tweets all seem to revolve around politics and foreign relations and could therefore possibly be from a foreign minister.
+
+Regardless of the method used to generate them the tweets are similar.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
