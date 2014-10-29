@@ -344,7 +344,7 @@ A lot of the generated tweets had a political theme where conflicts were discuss
 
 
 % Vad bidrog det med?
-We were able to show that applying constraints on a bigram made little difference rather than just using a bigram. We show that our approach adds a lot of work with small gain, and the gain gotten results in mostly nonsensical text. When the diversity in the generated tweet increased so did the quality decrease.
+We were able to show that applying constraints on a bigram made little difference rather than just using a bigram. We show that our approach adds a lot of work with small gain, however the gain results in mostly nonsensical text. When the diversity in the generated tweet increased it made the quality of the tweet decrease.
 
 % Hur kan våra resultat förbättras/förändras?
 The constrained matrix only uses a unigram, if it would use a bigram for it's POS constraints, perhaps the outcome would have been different. The outcome would probably be affected by it, however it is hard to say whether it would improve the results a lot. If the Markov chain was constrained by another property than the sequence of POS in Carl's tweets the results could possibly be different. An alternative could be to generate a template with topics that divide the tweet into parts and let that be the constraint of the Markov chain instead.
