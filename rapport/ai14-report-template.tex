@@ -268,32 +268,71 @@ We generate 10000 tweets with a length of between 30 and 140 characters using bo
 
 Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a bigram three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet.
 
+\newpage
 \subsection{Experiment}
 
 \subsubsection{Uniqueness based on words in tweet}
 
 \begin{figure}[h!]
   \hfill
-  {\includegraphics[width=1\linewidth, height = 200]{UniqByNumWordsTweet.png}}
+  \begin{center}
+  	{\includegraphics[width=300, height = 140]{UniqByNumWordsTweet.png}}
+  \end{center}
   \caption{Uniqueness based on words in tweet}
  \end{figure}
  
+ Uniqueness drops as the number of words in the tweet increases, both Markov chain and the constrained Markov chain decrease at  approximatively the same rate however. This is because of how our algorithm for uniqueness works, namely that if the tweet has 6 words then at worst it can take all 6 words from the same part of the corpus. This will result in a uniqueness of 50 percent, since this is a worst case scenario it cannot be lower that this.
+ 
  \begin{figure}[h!]
    \hfill
-  {\includegraphics[width=1\linewidth, height = 200]{UniqByNumWordsTweet2.png}}
+   \begin{center}
+  	{\includegraphics[width=280, height = 140]{UniqByNumWordsTweet2.png}}
+  \end{center}
   \hfill
   \caption{Uniqueness based on words in tweet (Comparison)}
  \end{figure}
  
- Uniqueness drops as the number of words in the tweet increases
- % Unikhet minskar när längd ökar men de har lika värden, förutom de spikes som markov kedjan får i början och slutet
+ On average the constrained Markov Chain produces tweets that are 71.04 percent unique and the Markov Chain has an average uniqueness of 70.29 percent. This means the constrained Markov chain constructs, on average, tweets that are 1.01 percent more unique.
 
 \newpage
-
 \subsubsection{Number of tweets based on uniqueness}
-% Även här lika, markov chain har mer värden som har låg unikhet än constrained och markov chain har fler värden som har hög unikhet
+
+\begin{figure}[h!]
+  \hfill
+  {\includegraphics[width=1\linewidth, height = 165]{NumTweetsByUniq.png}}
+  \caption{Number of tweets based on uniqueness}
+ \end{figure}
+ 
+ Here too both the Markov chain and the constrained Markov chain have similar results as a whole but the Markov chain has more tweets with less uniqueness than the constrained Markov chain. The opposite is also true, the constrained Markov chain has more tweets with more uniqueness than the Markov chain.
+ 
+  \begin{figure}[h!]
+   \hfill
+  {\includegraphics[width=1\linewidth, height = 165]{NumTweetsByUniq2.png}}
+  \hfill
+  \caption{Number of tweets based on uniqueness (Comparison)}
+ \end{figure}
+
+Figure 6 makes this more obvious, if you look at the lower end the Markov chain has visible spikes on the lower end (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (82, 91 and 100 percent).
 
 \subsubsection{Actual content of tweet}
+Even though we could not mechanically analyse semantic correctness of our tweets we still looked at some of the tweets it generates.
+
+
+1. With NGram [23 ms]:	Of risk of situation in Ukraine. By Pyongyang standards. 
+With TM [56 ms]:	Очевидно обострение экономической войны Russia is good.
+
+2. With NGram [19 ms]:	Victory Day has a great time!  
+With TM [46 ms]:	Truly alarming development in Bosnia. % INTE helt kopierad
+
+3.With NGram [142 ms]:	And clear messages from Brussels after two days. The final rally of the. % Han har slutat en mening med "the."
+With TM [161 ms]:	Started the meeting in Brussels. Istanbul after a couple of grey suits as well.  
+
+4. With NGram [15 ms]:	Third capital today. Symbolic that US wins over Russia. 
+With TM [97 ms]:	Advance in Kobane must certainly be stopped. Her contribution on behalf of EU. 
+
+5. With NGram [40 ms]:	Well, Cold War it was? For a day in the clowns''. 
+With TM [605 ms]:	PM's Reinfeldt of Sweden. Most of our world. Looks worse than a dog. 
+
 % Jämför TM och utan och se vilka som genererar bäst tweets att läsa/förstå.
 
 \newpage
