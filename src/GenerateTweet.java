@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 
 public class GenerateTweet {
-	private int maxLength = 30;
-	private int minLength = 25;
+	private int maxLength = 130;
+	private int minLength = 30;
 	private int nGramLength = 2;
 	
 	static String[] tags;

@@ -146,112 +146,128 @@ Our take from this paper was to be able to apply constraints upon a bigram, or r
 \section{My method (1--4 pages)}
 \label{sec:method}
 Our method that forms the basis of this paper is generating Twitter messages with the use of both Markov chains and constrained Markov chains and to compare the two methods with each other.
-The theory is that constraining an Markov chain will yield better and more diverse text being generated. 
-In section~\ref{sec:exps} where we explain our experiments and data we try out different orders of the Markov chain, 
-for the sake of explanation we assume a first order Markov chain is used to explain how the method works. 
+The theory is that constraining an Markov chain will yield better and more diverse text being generated.
+In section~\ref{sec:exps} where we explain our experiments and data we try out different orders of the Markov chain,
+for the sake of explanation we assume a first order Markov chain is used to explain how the method works.
 In a limited corpus such as this one: \\
-
 \begin{tabular}{r | l}
 ``Rolf has a dog.`` & Noun $\to$ verb $\to$ singular quantifier $\to$ noun \\
 ``Rolf owns a dog.`` & Noun $\to$ verb $\to$ singular quantifier $\to$ noun \\
 ``Rolf can not walk his dog.`` & Noun $\to$ modal $\to$ adverb $\to$ verb $\to$ pronoun $\to$ noun \\
 \end{tabular}
-
-This corpus generates a Markov chain that looks like figure 1a, with the edges being the probabilities for the specific transitions. 
-In the figure the specific part-of-speech is included in the states beneath the words from the corpus. 
+This corpus generates a Markov chain that looks like figure 1a, with the edges being the probabilities for the specific transitions.
+In the figure the specific part-of-speech is included in the states beneath the words from the corpus.
 If we then add constraints from a transition matrix, built up from POS-analysis of the same corpus we are given the new chain that is seen in figure 1b.
-
 \begin{figure}[h!]
-  \hfill
-  \subfigure[Unigram of the limited corpus]{\includegraphics[width=0.49\linewidth]{Bigram1.pdf}}
-  \hfill
-  \subfigure[Unigram with constraints applied]{\includegraphics[width=0.49\linewidth]{Bigram2.pdf}}
-  \hfill
-  \caption{Unigrams}
- \end{figure}
-
-
-
-We can see in figure 1b that since both ''has`` and ''owns`` are verbs they are more probable to occur than ''can``, this is reflected in the new edges. 
-This happens because the part-of-speech ''verb`` is more likely to follow a proper noun according to our transition matrix, and thus ''has`` and ''owns``, who are both verbs become even more likely to follow a proper noun. 
-This method can then be further applied to a bigram, a trigram or any n-grams that follows. 
-Our method however will only have an unigram for the transition matrix, even if the Markov chain of words from the corpus is longer, 
-the transitions are only observed with one previous state in consideration.
-
-
-In order to generate tweets, we first discussed the problem regarding the semantical corectness of a generalized tweet.
-The average level is according to our own experience far from sematically correct, which isn't a problem in understadabillity for an experienced Twitter user,
-but is a problem for our POS who would not recognize the words. Even if it would give it an ''unknown``-tag, we would not be able to predict any kind of results.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.75\linewidth]{machine_learning}
-  \caption{An example tweet}
+\hfill
+\subfigure[Unigram of the limited corpus]{\includegraphics[width=0.49\linewidth]{Bigram.pdf}}
+\hfill
+\subfigure[Unigram with constraints applied]{\includegraphics[width=0.49\linewidth]{Bigram2.pdf}}
+\hfill
+\caption{Unigrams}
 \end{figure}
-
-To solve this problem approximatily, we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in english.
-Our option fell on Carl Bildt, former foreight minister of Sweden, because of his active use of Twitter, 
-that he tweets in english and that most of his tweets are in gramatically correct english.
-
-\subsection{Implementation (0--2 pages)}
-\label{sec:impl}
-The implementation relied on a Part-of-Speech tagger from Stanford's Natural Language Processsing group.
-
-We start by collecting data, in the form of tweets, by a target person, Carl Bildt, to be used as the corpus of our tweet generator.
-
-Each tweet is run through Stanford's speech tagger to get the lexical class of each word depending on context.
-We then use these lexical classes as states for the transition matrix, more specifically they're used to see what lexical class usually follows any given lexical class or terminates a sentence.
-
-While iterating through the gathered data we store what word follows any given two words, including sentence terminating symbols such as '.' or '!' and store it as a bigram.
-
-When generating tweets two methods are used, first the bigram gets to select which words to use entirely on its own digression (Markov chain). Then the process is repeated but this time the bigram is constrained by which lexical class of words it is allowed to choose from, that class being whichever one the transition matrix has decided should follow (constrained Markov chain).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Experimental results (1--4 pages)}
-\label{sec:exps}
-
-\subsection{Experimental setup}
-We generate 10000 tweets with a length of between 30 and 140 characters using both the Markov chain and the constrained Markov chain. 
-% Jag tror att vi bör lägga till en motivering här om varför vi kollar efter unikheten i tweetsen. Det är ju ett par steg bort, vi ville generera tweets åt CB ->
-% tweetsen ska se bra ut -> tweetsen får däremot inte vara direkt kopierade från korpus för det är typ fusk. Vi behöver förtydliga den kedjan tror jag :) /Nisse
-Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a bigram three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet.
-
-\subsection{Experiment}
-
-For example purposes we added these sentences to the limited corpus mentioned under \textit{My Method}:
-
+We can see in figure 1b that since both ''has`` and ''owns`` are verbs they are more probable to occur than ''can``, this is reflected in the new edges.
+This happens because the part-of-speech ''verb`` is more likely to follow a personal noun according to our transition matrix, and thus ''has`` and ''owns``, who are
+both verbs become even more likely to follow a personal noun. This method can then be further applied to a bigram, a trigram or any n-grams that follows.
+Our method however will only have an unigram for the transition matrix, even if the Markov chain of words from the corpus is longer,
+the transitions are only observed with one previous state in consideration.
+\subsubsection{Calculating uniqueness}
+We originally wanted to analyse the semantic correctness of our tweets but were unable to find a method of doing so mechanically. In lieu of other options we decided to instead analyse how unique the tweets were in terms of how much it just copied straight out of the corpus.
+Since we use a bigram it will always take three successive words but anything above that compromises uniqueness.
+For example purposes we added these sentences to the limited corpus mentioned earlier:
 \begin{tabular}{l}
 ``Mufasa is a dog with a purple tail.``\\
 ``Mufasa owns a yellow cat.``\\
 ``Jessica can not eat a yellow dog with a pink tail.``\\
 ``Steve has a shirt with a purple tail.``\\
 \end{tabular}
-
 % Räkna manuellt med limited corpus
 \textbf{Example 1:} ``Rolf can not eat a yellow cat.``
-	
 It first matches "can not eat a yellow" since it is the largest continuous match, this reduces uniqueness by 2. What is left is "Rolf" and "cat" since both are shorter than three words we stop here.
-
 Thus this sentences uniqueness is $\frac{9 - 2}{9} \approx$ 78\%.
-
 \textbf{Example 2:} ``Rolf has a shirt with a yellow dog with a pink tail.``
-	
-The first match is "a yellow dog with a pink tail", reducing uniqueness by 4. Remaining is "Rolf has a shirt with" which matches "has a shirt with", further reducing uniqueness by 1. Only "Rolf" is left over thus we stop. 
-
+The first match is "a yellow dog with a pink tail", reducing uniqueness by 4. Remaining is "Rolf has a shirt with" which matches "has a shirt with", further reducing uniqueness by 1. Only "Rolf" is left over thus we stop.
 Thus this sentence has a uniqueness of $\frac{12 - (4 + 1)}{12} \approx$ 58\%.
-
-% ta upp failure rate (2 per 10000), bara constrained kan missa
-
+\subsubsection{Corpus}
+In order to generate tweets, we first discussed the problem regarding the semantical corectness of a generalized tweet.
+The average level is according to our own experience far from sematically correct, which isn't a problem in understadabillity for an experienced Twitter user,
+but is a problem for our POS who would not recognize the words. Even if it would give it an ''unknown``-tag, we would not be able to predict any kind of results.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\linewidth]{machine_learning}
+\caption{An example tweet}
+\end{figure}
+To solve this problem approximatily, we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in English.
+Our option fell on Carl Bildt, former foreign minister of Sweden, because of his active use of Twitter,
+that he tweets in English and that most of his tweets are in grammatically correct English.
+\subsection{Implementation (0--2 pages)}
+\label{sec:impl}
+The implementation relied on a Part-of-Speech tagger from Stanford's Natural Language Processsing group.
+We start by collecting data, in the form of tweets, by a target person, Carl Bildt, to be used as the corpus of our tweet generator. The data is filtered to remove unwanted elements such as hashtags and web addresses.
+Each tweet is run through Stanford's speech tagger to get the lexical class of each word depending on context.
+We then use these lexical classes as states for the transition matrix, more specifically they're used to see what lexical class usually follows any given lexical class or terminates a sentence.
+While iterating through the gathered data we store what word follows any given two words, including sentence terminating symbols such as '.' or '!' and store it as a bigram.
+When generating tweets two methods are used, first the bigram gets to select which words to use entirely on its own digression (Markov chain). Then the process is repeated but this time the bigram is constrained by which lexical class of words it is allowed to choose from, that class being whichever one the transition matrix has decided should follow (constrained Markov chain).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experimental results (1--4 pages)}
+\label{sec:exps}
+\subsection{Experimental setup}
+We generate 10000 tweets with a length of between 30 and 140 characters using both the Markov chain and the constrained Markov chain.
+Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a bigram three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet.
+\newpage
+\subsection{Experiment}
 \subsubsection{Uniqueness based on words in tweet}
- % Unikhet minskar när längd ökar men de har lika värden, förutom de spikes som markov kedjan får i början och slutet
-
+\begin{figure}[h!]
+\hfill
+\begin{center}
+{\includegraphics[width=300, height = 140]{UniqByNumWordsTweet.png}}
+\end{center}
+\caption{Uniqueness based on words in tweet}
+\end{figure}
+Uniqueness drops as the number of words in the tweet increases, both Markov chain and the constrained Markov chain decrease at approximatively the same rate however. This is because of how our algorithm for uniqueness works, namely that if the tweet has 6 words then at worst it can take all 6 words from the same part of the corpus. This will result in a uniqueness of 50 percent, since this is a worst case scenario it cannot be lower that this.
+\begin{figure}[h!]
+\hfill
+\begin{center}
+{\includegraphics[width=280, height = 140]{UniqByNumWordsTweet2.png}}
+\end{center}
+\hfill
+\caption{Uniqueness based on words in tweet (Comparison)}
+\end{figure}
+On average the constrained Markov Chain produces tweets that are 71.04 percent unique and the Markov Chain has an average uniqueness of 70.29 percent. This means the constrained Markov chain constructs, on average, tweets that are 1.01 percent more unique.
+\newpage
 \subsubsection{Number of tweets based on uniqueness}
-% Även här lika, markov chain har mer värden som har låg unikhet än constrained och markov chain har fler värden som har hög unikhet
-
+\begin{figure}[h!]
+\hfill
+{\includegraphics[width=1\linewidth, height = 165]{NumTweetsByUniq.png}}
+\caption{Number of tweets based on uniqueness}
+\end{figure}
+Here too both the Markov chain and the constrained Markov chain have similar results as a whole but the Markov chain has more tweets with less uniqueness than the constrained Markov chain. The opposite is also true, the constrained Markov chain has more tweets with more uniqueness than the Markov chain.
+\begin{figure}[h!]
+\hfill
+{\includegraphics[width=1\linewidth, height = 165]{NumTweetsByUniq2.png}}
+\hfill
+\caption{Number of tweets based on uniqueness (Comparison)}
+\end{figure}
+Figure 6 makes this more obvious, if you look at the lower end the Markov chain has visible spikes on the lower end (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (82, 91 and 100 percent).
 \subsubsection{Actual content of tweet}
-% Jämför TM och utan och se vilka som genererar bäst tweets att läsa/förstå.
-
+Even though we could not mechanically analyse semantic correctness of our tweets we still looked at some of the tweets it generates.
+\textbf{Markov chain}
+\begin{tabular}{l}
+``Of risk of situation in Ukraine. By Pyongyang standards.``\\
+``Victory Day has a great time!\hspace{0 cm}``\\
+``And clear messages from Brussels after two days. The final rally of the.``\\
+``Third capital today. Symbolic that US wins over Russia.``\\
+``Well, Cold War it was? For a day in the clowns''.``
+\end{tabular}
+\textbf{Constrained Markov chain}
+\begin{tabular}{l}
+``Очевидно обострение экономической войны Russia is good.``\\
+``Truly alarming development in Bosnia.``\\ % INTE helt kopierad
+``Started the meeting in Brussels. Istanbul after a couple of grey suits as well.``\\
+``Advance in Kobane must certainly be stopped. Her contribution on behalf of EU.``\\
+``PM's Reinfeldt of Sweden. Most of our world. Looks worse than a dog.``
+\end{tabular}
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -261,15 +277,12 @@ Thus this sentence has a uniqueness of $\frac{12 - (4 + 1)}{12} \approx$ 58\%.
 We compared generating natural language with a native bigram from our corpus with using a constrained markov chain with a bigram to generate tweets seeming to origin from a specific user.
 In the result we can see that using a constrained markov chain has a slight advantage over simply using a bigram in generating a diversity of content. % Behövs diskussion om hur pass de verkade vara från CB himself.
 % Vad bidrog det med?
-We were able to show that with a slight change in implementation we could slightly change the outcome of results. 
+We were able to show that with a slight change in implementation we could slightly change the outcome of results.
 % Hur kan våra resultat förbättras/förändras?
 The constrained matrix only uses a unigram, if it would use a bigram for it's POS constraints, perhaps the outcome would have been different. Or less diversity. What do we know. We need logic here.
 Using i bigram for constraints would perhaps give a more stable result and thus beeing more similar to only using a bigram. But since it's POS, i have no idea.s
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{plainnat}
 \bibliography{reflist}
-
-
 \end{document}
