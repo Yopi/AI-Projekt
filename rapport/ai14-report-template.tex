@@ -20,7 +20,7 @@
 Group Ain't intelligent\\
 \begin{tabular}{cccc}
 Viktor Bj\"{o}rkholm & Jesper Br\"{a}nn & Daniel Duberg & Jakob Tidestr\"{o}m\\
-92-11-17 & 92-09-30 & 93-01-13 & 90-10-04 \\
+92-11-17 & 92-09-30 & 93-01-17 & 90-10-04 \\
 viktorbj@kth.se & jbrann@kth.se & dduberg@kth.se & jakobti@kth.se \\
 \includegraphics[width=0.13\linewidth]{Alan_Turing_photo} & 
 \includegraphics[width=0.13\linewidth]{Alan_Turing_photo} & 
@@ -204,49 +204,12 @@ both verbs become even more likely to follow NNP (Rolf). This method can then be
 Our method however will only have an unigram for the transition matrix, even if the Markov chain of words from the corpus is longer, 
 the transitions are only observed with one previous state in consideration.
 
+\subsubsection{Calculating uniqueness}
+We originally wanted to analyse the semantic correctness of our tweets but were unable to find a method of doing so mechanically. In lieu of other options we decided to instead analyse how unique the tweets were in terms of how much it just copied straight out of the corpus.
 
-\textbf{Corpus:}\\
-In order to generate tweets, we first discussed the problem regarding the semantical corectness of a generalized tweet.
-The average level is according to our own experience far from sematically correct, which isn't a problem in understadabillity for an experienced Twitter user,
-but is a problem for our POS who would not recognize the words. Even if it would give it an ''unknown``-tag, we would not be able to predict any kind of results.
+Since we use a bigram it will always take three successive words but anything above that compromises uniqueness.
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1\linewidth]{machine_learning}
-  \caption{An example tweet}
-\end{figure}
-
-To solve this problem approximatily, we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in english.
-Our option fell on Carl Bildt, former foreight minister of Sweden, because of his active use of Twitter, 
-that he tweets in english and that most of his tweets are in gramatically correct english.
-
-\subsection{Implementation (0--2 pages)}
-\label{sec:impl}
-The implementation relied on a Part-of-Speech tagger from Stanford's Natural Language Processsing group.
-
-We start by collecting data, in the form of tweets, by a target person, Carl Bildt, to be used as the corpus of our tweet generator.
-
-Each tweet is run through Stanford's speech tagger to get the lexical class of each word depending on context.
-We then use these lexical classes as states for the transition matrix, more specifically they're used to see what lexical class usually follows any given lexical class or terminates a sentence.
-
-While iterating through the gathered data we store what word follows any given two words, including sentence terminating symbols such as '.' or '!' and store it as a bigram.
-
-When generating tweets two methods are used, first the bigram gets to select which words to use entirely on its own digression (Markov chain). Then the process is repeated but this time the bigram is constrained by which lexical class of words it is allowed to choose from, that class being whichever one the transition matrix has decided should follow (constrained Markov chain).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Experimental results (1--4 pages)}
-\label{sec:exps}
-
-\subsection{Experimental setup}
-We generate 10000 tweets with a length of between 30 and 140 characters using both the Markov chain and the constrained Markov chain. 
-% Jag tror att vi bör lägga till en motivering här om varför vi kollar efter unikheten i tweetsen. Det är ju ett par steg bort, vi ville generera tweets åt CB ->
-% tweetsen ska se bra ut -> tweetsen får däremot inte vara direkt kopierade från korpus för det är typ fusk. Vi behöver förtydliga den kedjan tror jag :) /Nisse
-Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a bigram three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet.
-
-\subsection{Experiment}
-
-For example purposes we added these sentences to the limited corpus mentioned under \textit{My Method}:
+For example purposes we added these sentences to the limited corpus mentioned earlier:
 
 \begin{tabular}{l}
 ``Mufasa is a dog with a purple tail.``\\
@@ -268,10 +231,65 @@ The first match is "a yellow dog with a pink tail", reducing uniqueness by 4. Re
 
 Thus this sentence has a uniqueness of $\frac{12 - (4 + 1)}{12} \approx$ 58\%.
 
-% ta upp failure rate (2 per 10000), bara constrained kan missa
+\subsubsection{Corpus}
+In order to generate tweets, we first discussed the problem regarding the semantical corectness of a generalized tweet.
+The average level is according to our own experience far from sematically correct, which isn't a problem in understadabillity for an experienced Twitter user,
+but is a problem for our POS who would not recognize the words. Even if it would give it an ''unknown``-tag, we would not be able to predict any kind of results.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\linewidth]{machine_learning}
+  \caption{An example tweet}
+\end{figure}
+
+To solve this problem approximatily, we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in English.
+Our option fell on Carl Bildt, former foreign minister of Sweden, because of his active use of Twitter, 
+that he tweets in English and that most of his tweets are in grammatically correct English.
+
+\subsection{Implementation (0--2 pages)}
+\label{sec:impl}
+The implementation relied on a Part-of-Speech tagger from Stanford's Natural Language Processsing group.
+
+We start by collecting data, in the form of tweets, by a target person, Carl Bildt, to be used as the corpus of our tweet generator. The data is filtered to remove unwanted elements such as hashtags and web addresses.
+
+Each tweet is run through Stanford's speech tagger to get the lexical class of each word depending on context.
+We then use these lexical classes as states for the transition matrix, more specifically they're used to see what lexical class usually follows any given lexical class or terminates a sentence.
+
+While iterating through the gathered data we store what word follows any given two words, including sentence terminating symbols such as '.' or '!' and store it as a bigram.
+
+When generating tweets two methods are used, first the bigram gets to select which words to use entirely on its own digression (Markov chain). Then the process is repeated but this time the bigram is constrained by which lexical class of words it is allowed to choose from, that class being whichever one the transition matrix has decided should follow (constrained Markov chain).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experimental results (1--4 pages)}
+\label{sec:exps}
+
+\subsection{Experimental setup}
+We generate 10000 tweets with a length of between 30 and 140 characters using both the Markov chain and the constrained Markov chain.
+
+Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a bigram three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet.
+
+\subsection{Experiment}
 
 \subsubsection{Uniqueness based on words in tweet}
+
+\begin{figure}[h!]
+  \hfill
+  {\includegraphics[width=1\linewidth, height = 200]{UniqByNumWordsTweet.png}}
+  \caption{Uniqueness based on words in tweet}
+ \end{figure}
+ 
+ \begin{figure}[h!]
+   \hfill
+  {\includegraphics[width=1\linewidth, height = 200]{UniqByNumWordsTweet2.png}}
+  \hfill
+  \caption{Uniqueness based on words in tweet (Comparison)}
+ \end{figure}
+ 
+ Uniqueness drops as the number of words in the tweet increases
  % Unikhet minskar när längd ökar men de har lika värden, förutom de spikes som markov kedjan får i början och slutet
+
+\newpage
 
 \subsubsection{Number of tweets based on uniqueness}
 % Även här lika, markov chain har mer värden som har låg unikhet än constrained och markov chain har fler värden som har hög unikhet
