@@ -183,9 +183,9 @@ For example purposes we added these sentences to the limited corpus mentioned ea
 % Räkna manuellt med limited corpus
 \textbf{Example 1:} ``Rolf can not eat a yellow cat.``
 	
-It first matches "can not eat a yellow" since it is the largest continuous match, this reduces uniqueness by 2. What is left is "Rolf" and "cat" since both are shorter than three words we stop here.
+It first matches "can not eat a yellow" since it is the largest continuous match. This match contains five words, which is two words longer than it has to be (since we use a bigram), this reduces uniqueness by 2. What is left is the strings "Rolf" and "cat", since each of these strings are shorter than three words we stop here.
 
-Thus this sentences uniqueness is $\frac{9 - 2}{9} \approx$ 78 percent.
+Thus this sentences uniqueness is $\frac{7 - 2}{7} \approx$ 71 percent.
 
 \textbf{Example 2:} ``Rolf has a shirt with a yellow dog with a pink tail.``
 	
@@ -274,7 +274,7 @@ Once generated we analyse the tweets uniqueness by counting how many of the used
   \caption{Number of tweets based on uniqueness (Comparison)}
  \end{figure}
 
-Figure 6 makes this more obvious, if you look at the lower end the Markov chain has visible spikes on the lower end (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (82, 91 and 100 percent).
+Figure 6 makes this more obvious, if you look at the lower end the Markov chain has visible spikes on the lower end (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (70, 82, 91 and 100 percent).
 
 \subsubsection{Actual content of tweet}
 Even though we could not mechanically analyse semantic correctness of our tweets we still looked at some of the tweets it generates. We generated 5 example tweets, using both methods, for analysis.
