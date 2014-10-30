@@ -195,8 +195,8 @@ Thus this sentence has a uniqueness of $\frac{12 - (4 + 1)}{12} \approx$ 58 perc
 
 \subsubsection{Corpus}
 In order to generate tweets, we first discussed the problem regarding the semantical correctness of a generalized tweet.
-The average tweet is according to our own experience far from semantically correct, which is not a problem in understandability for an experienced Twitter user,
-but is a problem for our POS which can not recognize the words. Even if it could give it an ''unknown``-tag, we would not be able to predict any kind of results.
+The average tweet is not semantically correct. This is not a problem in understandability for an experienced Twitter user,
+but is a problem for the POS which can not recognize the words. Even if it could give it an ''unknown``-tag, predicting any kind of results would not be possible.
 
 \begin{figure}[h!]
   \centering
@@ -204,18 +204,18 @@ but is a problem for our POS which can not recognize the words. Even if it could
   \caption{An example tweet}
 \end{figure}
 
-To solve this problem approximately we decided to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in English.
-Our option fell on Carl Bildt, former foreign minister of Sweden, because of his active use of Twitter, 
+To solve this problem approximately one solution is to generate tweets for a specific user who mostly uses correct grammar and semantics when tweeting and tweets in English.
+Carl Bildt, former foreign minister of Sweden, was chosen because of his active use of Twitter, 
 that he tweets in English and that most of his tweets are in grammatically correct English.
 
 \subsection{Implementation}
 \label{sec:impl}
-We start by collecting data, in the form of tweets, by a target person, Carl Bildt, to be used as the corpus for our tweet generator. The data is filtered to remove unwanted elements such as hash-tags and web addresses.
+Data is collected in the form of tweets, by a target person, Carl Bildt, to be used as the corpus for the tweet generator. The data is filtered to remove unwanted elements such as hash-tags and web addresses.
 
 The implementation relied on a Part-of-Speech tagger from Stanford's Natural Language Processing group. Each tweet is run through said tagger to get the lexical class of each word depending on context.
-We then use these lexical classes as states for the transition matrix, more specifically they're used to see what lexical class usually follows any given lexical class or terminates a sentence.
+These lexical classes are then used as states for the transition matrix, more specifically they are used to see what lexical class usually follows any given lexical class, or terminates a sentence.
 
-While iterating through the gathered data we store what word follows any given two words, including sentence terminating symbols such as '.' or '!' and store it as a tri-gram.
+While iterating through the gathered data the preceding two words are stored as being words that are followed by the current word, including sentence terminating symbols such as '.' or '!'. This is then stored as a tri-gram.
 
 When generating tweets two methods are used, first the tri-gram gets to select which words to use entirely on its own (Markov chain). Then the process is repeated but this time the tri-gram is constrained by which lexical class of words it is allowed to choose from, that class being whichever one the transition matrix has decided should follow (constrained Markov chain).
 
@@ -225,10 +225,10 @@ When generating tweets two methods are used, first the tri-gram gets to select w
 \label{sec:exps}
 
 \subsection{Experimental setup}
-We generate 10000 tweets with a length of between 30 and 140 characters using both the Markov chain and the constrained Markov chain.
+10000 tweets with a length of between 30 and 140 characters was generated using both the Markov chain and the constrained Markov chain.
 The maximum length of a tweet is 140 characters and 30 is an arbitrarily chosen lower bound.
 
-Once generated we analyse the tweets uniqueness by counting how many of the used words are from the same part of the corpus. However, since we use a tri-gram, three of the words have to appear in succession and thus we only count if four or more of the words are from the same part of the corpus. We then divide this by the number of words to get an average for the whole tweet, as described in section~\ref{subsec:calcuniq}.
+Once generated the tweets are analysed for uniqueness by counting how many of the used words are from the same part of the corpus. However, since a tri-gram is used, three of the words have to appear in succession and thus are only counted if four or more of the words are from the same part of the corpus. This is then divided this by the number of words to get an average for the whole tweet, as described in section~\ref{subsec:calcuniq}.
 
 \newpage
 \subsection{Experiment}
@@ -243,7 +243,7 @@ Once generated we analyse the tweets uniqueness by counting how many of the used
   \caption{Uniqueness based on words in tweet}
  \end{figure}
  
- Uniqueness drops as the number of words in the tweet increases, both Markov chain and the constrained Markov chain decrease at  approximatively the same rate however. This is because of how our algorithm for uniqueness works, namely that if the tweet has 6 words then at worst it can take all 6 words from the same part of the corpus. This will result in a uniqueness of 50 percent, since this is a worst case scenario, it cannot be lower than this.
+ Uniqueness drops as the number of words in the tweet increases, both Markov chain and the constrained Markov chain decrease at  approximatively the same rate however. This is because of how the algorithm for uniqueness works, namely that if the tweet has 6 words then at worst it can take all 6 words from the same part of the corpus. This will result in a uniqueness of 50 percent, since this is a worst case scenario, it cannot be lower than this.
  
  \begin{figure}[h!]
    \hfill
@@ -274,10 +274,10 @@ Once generated we analyse the tweets uniqueness by counting how many of the used
   \caption{Number of tweets based on uniqueness (Comparison)}
  \end{figure}
 
-Figure 6 makes this more obvious, if you look at the lower end the Markov chain has visible spikes on the lower end (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (70, 82, 91 and 100 percent).
+Figure 6 makes this more obvious, the graph shows that the Markov chain has visible spikes on the lower end of uniqueness (namely around 23 and 46 percent) and the constrained Markov chain has the same on the higher end (70, 82, 91 and 100 percent).
 
 \subsubsection{Actual content of tweet}
-Even though we could not mechanically analyse semantic correctness of our tweets we still looked at some of the tweets it generates. We generated 5 example tweets, using both methods, for analysis.
+Even though a way of mechanically analysing the semantic correctness of the tweets was not found, five generated example tweets analysed manually, for both methods.
 
 \textbf{Markov chain}
 
@@ -303,13 +303,13 @@ Even though we could not mechanically analyse semantic correctness of our tweets
 \item ``PM's Reinfeldt of Sweden. Most of our world. Looks worse than a dog.``
 \end{itemize}
 
-Occasionally the beginning and end of our generated tweets are semantically incorrect, this is caused by our corpus filtering as the preceding/subsequent element has been removed from the corpus.
+Occasionally the beginning and end of the generated tweets are semantically incorrect, this is caused by the corpus filtering as the preceding and/or subsequent element has been removed from the corpus.
 
-We do not filter languages which means that sometimes we get long strings of, for example, Russian that we cannot determine if the strings are semantically correct or not.
+Languages are not filtered which means that sometimes there are strings of, for example, Russian that cannot be determined if the strings are semantically correct or not.
 
 Otherwise the subjects of the generated tweets all seem to revolve around politics and foreign relations and could therefore possibly be from a foreign minister.
 
-Based on tweets we have generated, we can see that there is similarity of the semantical structure and content for both methods. 
+Based on generated tweets, it can seen that there is similarity of the semantic structure and content for both methods. 
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -317,16 +317,16 @@ Based on tweets we have generated, we can see that there is similarity of the se
 \section{Summary and Conclusions}
 \label{sec:summary}
 % Vad har vi kommit fram till?
-We compared generating natural language with a native tri-gram from our corpus with using a constrained Markov chain of order 2 to generate tweets seeming to origin from a specific person, which in our experiment was Carl Bildt. 
+The report compares generating natural language with a native tri-gram from a corpus with using a constrained Markov chain of order 2 to generate tweets seeming to originate from a specific person, which in the experiment was Carl Bildt. 
 The tweets should thus be semantically correct and have a somewhat meaningful content.
-In the result we can see that using a constrained Markov chain has a slight advantage over simply using a tri-gram in generating a diversity of content. 
+In the results it can be seen that using a constrained Markov chain has a slight advantage over simply using a tri-gram in generating a diversity of content. 
 However, there was seemingly no difference at all in the quality of the content. 
 They did seem to be from Carl Bildt, since the topics of the tweets were affected by the words in his tweets. 
 A lot of the generated tweets had a political theme where conflicts were discussed and political situations in different regions of the world. 
 
 
 % Vad bidrog det med?
-We were able to show that applying constraints on a tri-gram made little difference rather than just using a tri-gram. We show that our approach adds a lot of work for small gain, and that the gain results in mostly nonsensical text. When the diversity in the generated tweet increased so did the quality decrease.
+It was shown that applying constraints on a tri-gram made little difference rather than just using a tri-gram. The approach adds a lot of work for small gain, and that the gain results in mostly nonsensical text. When the diversity in the generated tweet increased so did the quality decrease.
 
 % Hur kan våra resultat förbättras/förändras?
 The constrained matrix only uses a bi-gram, if it would use a tri-gram for it's POS constraints, perhaps the outcome would have been different. The outcome would probably be affected by it, however it is hard to say whether it would improve the results a lot. If the Markov chain was constrained by another property than the sequence of POS in Carl's tweets the results could possibly be different. An alternative could be to generate a template with topics that divide the tweet into parts and let that be the constraint of the Markov chain instead.
