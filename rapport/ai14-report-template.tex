@@ -68,41 +68,41 @@ This paper aims to develop an understanding on refining natural language text ge
 Natural Language Generation (NLG) is an area of research within the field of Artificial Intelligence. 
 The purpose of NLG is to generate text that is semantically correct in order to make communication with computer systems more natural and understandable for users.
 
-Within this paper we show the difference in quality of two different approaches to text generation. 
+Within this paper the difference in quality of two different approaches to text generation is shown. 
 One of these approaches is using Markov chains, also known as n-grams. 
 These n-grams take \textit{n} words in sequence and uses a corpus of text to determine what the most probable next word is. 
 Using a larger \textit{n} in an n-gram means that more text is copied straight from the corpus, 
 however this also means that there is a higher likelihood that the text being generated is meaningful. 
 
-We contrast this method using constrained Markov chains. 
+This method is contrasted using constrained Markov chains. 
 The main constraint of the Markov chains is that two words following each other will have the same sequence of part-of-speech (POS) as the corpus.
 POS is a concept within NLG that divides a text into the different linguistical categories of the words within it.
 
-We aim to show that using this constraint upon the Markov chain, sentences will have a greater diversity but still be as semantically correct as just using a n-gram.
+The aim is to show that using this constraint on the Markov chain, sentences will have a greater diversity but still be as semantically correct as just using a n-gram.
 Since the problem with larger n:s within n-grams is that text is copied straight from the corpus, 
 the constraint will hopefully help us create semantically correct sentences with a greater diversity from the corpus.
 
-To be able to show differences in these two approaches we generate tweets for a specific person.
-We build upon the work by \cite{shannon48} for the theory of implementing an n-gram, a description on generating and parsing corpuses by \citep{Corpus}
-and the work by \citealp{McBarb} to implement our own constraints on the n-gram.
+To be able to show differences in these two approaches tweets are generated for a specific person.
+This paper builds upon the work by \cite{shannon48} for the theory of implementing an n-gram, a description on generating and parsing corpuses by \citep{Corpus}
+and the work by \citealp{McBarb} to implement constraints on the n-gram.
    
 \subsection{Contribution}
 
-We have implemented a bi-gram of POS on to a tri-gram in order to observe the difference in the result. 
+In order to observe the difference in the result a bi-gram of POS is implemented on to a tri-gram. 
 As mentioned above a problem with n-grams with too high \textit{n:s} is that parts of the corpus is copied if said corpus does not contain a large variation of similar sentences, 
 so that a given start of \textit{n} words does not automatically lead to one sentence finish. i.e. a larger corpus is needed for larger \textit{n:s}.
-To be able to keep a smaller and diverse corpus we applied the bi-gram of POS tags on top of the n-gram to allow the program to select words of a common word type order and with a greater diversity than naturally occurs in the corpus.
+To be able to keep a smaller and diverse corpus the bi-gram of POS tags is applied on top of the n-gram to allow the program to select words of a common word type order and with a greater diversity than naturally occurs in the corpus.
 
-Our main contribution to the field is that we have tried putting this bi-gram constraint upon the regular Markov chain and doing it for short message generation.
-The research area we base this paper on focus on generating text that fits a theme or rhythm whereas we generalize the concept by creating text that is not constrained by a pre-written sequence of POS. 
-Our approach is that we let the model be trained with two types of information, thus our contribution to the field lies in examining how the combination of these two approaches improves the general natural language generation.
+This paper's main contribution to the field is that it evaluates putting said bi-gram constraint upon the regular Markov chain and doing it for short message generation.
+The research area this paper is based on focus on generating text that fits a theme or rhythm whereas the concept is generalized by creating text that is not constrained by a pre-written sequence of POS. 
+The approach is that the model is trained with two types of information, thus the contribution to the field lies in examining how the combination of these two approaches improves the general natural language generation.
 
 \subsection{Outline}
-We explain how \citep{shannon48}, \citep{Corpus} and \cite{McBarb} use NLG in section~\ref{sec:relwork} and also explain how that research has affected ours. 
-In section~\ref{sec:method} we then go through the details on how the algorithm works, 
-we also give examples to explain in detail what the difference between the two methods we are comparing. 
-This is complemented with details regarding our specific implementation of the algorithm in section~\ref{sec:impl}. 
-The data from running the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}. Lastly in section~\ref{sec:summary} we summarize our results and discuss how our experiments can be further improved.
+It is explained how \citep{shannon48}, \citep{Corpus} and \cite{McBarb} use NLG in section~\ref{sec:relwork} and also explained how that research has affected this papers. 
+In section~\ref{sec:method} the details on how the algorithm works is explained, 
+examples are also given to explain in detail what the difference between the two methods that are compared. 
+This is complemented with details regarding this paper's specific implementation of the algorithm in section~\ref{sec:impl}. 
+The data from running the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}. Lastly in section~\ref{sec:summary} the results are summarized and it is discussed how the experiments in this paper can be further improved.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,23 +110,23 @@ The data from running the algorithm is explained, reviewed and evaluated in sect
 \label{sec:relwork}
 \cite{shannon48} goes through the first basic steps in how to naively generate text from a corpus with Markov chains. 
 He explains in depth how Markov chains can be used to generate real sounding English words from letters and also sentences from words. 
-We implemented n-grams and tried different orders of them which according to Shannon would generate output more similar to the content of the corpus with the higher orders. 
+N-grams of different orders are implemented and tried which according to Shannon would generate output more similar to the content of the corpus with the higher orders. 
 The difference between the different orders of Markov chains lies in how many preceding states that are taken in consideration.
-Our Markov chain was built up with a transition matrix where the values of the rows in a column represent the probability of moving from the state of the column to the state of the row. The probabilities of the transitions between the different states is taught to the transition matrix by iterating through the corpus. This concept is introduced by Shannon and proven to work in his paper.
+The Markov chain used in this paper was built up with a transition matrix where the values of the rows in a column represent the probability of moving from the state of the column to the state of the row. The probabilities of the transitions between the different states is taught to the transition matrix by iterating through the corpus. This concept is introduced by Shannon and proven to work in his paper.
 His approach was novel at the time however it is a staple in modern text generation. 
 
 
 In the in-proceedings by \cite{Corpus}, they describe the process of building a corpus for a natural language generation system with different user requests and demands that constrain the corpus. 
 The corpus consists of example output that the NLG will imitate and the user requests should be applied through modifying and simplifying the corpus according to them.
-Since the corpus should consist of example output, and we want to generate text that should imitate tweets, we populate our corpus with tweets.
-We play the role of our own users since we are the ones with demands on the generated text and we need to generate a corpus that is usable by our algorithms. Thus, as \citep{Corpus} describe we remove things from our corpus that we do not want to use when generating, such as hash-tags and URL:s.
+Since the corpus should consist of example output, and it is text that should imitate tweets that is going to be generated in this paper, the corpus used is populated with tweets.
+We play the role of our own users since we are the ones with demands on the generated text and we need to generate a corpus that is usable by our algorithms. Thus, as \citep{Corpus} describe things from the corpus are removed upon generating it, such as hash-tags and URL:s.
 
 
-Our work on actually constraining the Markov chain is built upon \cite{McBarb} work, 
+The work on actually constraining the Markov chain is built upon \cite{McBarb} work, 
 where the authors generated lyrics from different artists using Markov chains with constraints. 
 These were to be generated in a specific style and with a rhythm, to simulate real lyrics from a large span of artists, which is achieved by applying constraints on a tri-gram, a Markov chain of order 2.
 They use POS templates to fit the correct poetic metre, these templates are not generated by their algorithm, but rather handcrafted to get a desirable result.
-Our take from this paper was to be able to apply constraints upon a tri-gram, or rather a Markov chain in general. Similarily we utilize a part-of-speech template of sorts, but we diverge a bit from this paper by not handcrafting them and instead letting our algorithm generate them based on the corpus.
+The research from their paper was used to be able to apply constraints upon a tri-gram, or rather a Markov chain in general. Similarily this paper utilize a part-of-speech template of sorts, but diverge a bit from their paper by not handcrafting them and instead letting the algorithm generate them based on the corpus.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
