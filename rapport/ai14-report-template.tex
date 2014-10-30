@@ -168,10 +168,10 @@ the transitions are only observed with one previous state in consideration.
 
 \subsubsection{Calculating uniqueness}
 \label{subsec:calcuniq}
-Since it is not possible to get a value on the semantic correctness of a sentence programatically we create a metric based on the uniqueness of a generated tweet based on how much of the tweet is copied straight from the corpus.
-Because we use a tri-gram, three successive words will always be chosen from the corpus but anything more than that makes it less unique.
+Since it is not possible to get a value on the semantic correctness of a sentence programatically a metric is created based on the uniqueness of a generated tweet. The uniqueness is based on how much of the tweet is copied straight from the corpus.
+Because a tri-gram is used, three successive words will always be chosen from the corpus but anything more than that makes it less unique.
 
-For example purposes we added these sentences to the limited corpus mentioned earlier:
+For example purposes these sentences are added to the limited corpus mentioned earlier:
 
 \begin{tabular}{l}
 ``Mufasa is a dog with a purple tail.``\\
