@@ -14,6 +14,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage[russian,english]{babel}
 \graphicspath{{pictures/}}
+\setcitestyle{open={(},close={)}}
 
 % SVG Options
 \setsvg{inkscape = inkscape -z -D}
@@ -50,8 +51,8 @@ viktorbj@kth.se & jbrann@kth.se & dduberg@kth.se & jakobti@kth.se \\
 
 \begin{abstract}
 This paper explores the difference in result when generating twitter messages that seem to come from a former Swedish foreign minister, Carl Bildt, using two natural language generation based techniques that build on each other.
-The outcome of the methods were indeed tweets seeming to originate from Carl Bildt with a subject that circulated around foreign politics. 
-The most reliable ones however were mainly copied directly from his feed; this problem is addressed using the methods discussed in this paper. The methods used in this paper are Markov chains with and without constraints to generate tweets, suggestions are also given on improvement of our technique.
+The outcome of the methods were tweets seeming to originate from Carl Bildt with a subject that circulated around foreign politics. 
+However, the most reliable ones were mainly copied directly from his feed; this problem is addressed using the methods discussed in this paper, which are Markov chains with and without constraints to generate tweets. Suggestions are also given on improvement of our technique.
 
 
 \end{abstract}
@@ -70,39 +71,39 @@ The purpose of NLG is to generate text that is semantically correct in order to 
 
 Within this paper the difference in quality of two different approaches to text generation is shown. 
 One of these approaches is using Markov chains, also known as n-grams. 
-These n-grams take \textit{n} words in sequence and uses a corpus of text to determine what the most probable next word is. 
+These n-grams take \textit{n} words in sequence and use a corpus of text to determine what the most probable next word is. 
 Using a larger \textit{n} in an n-gram means that more text is copied straight from the corpus, 
 however this also means that there is a higher likelihood that the text being generated is meaningful. 
 
 This method is contrasted using constrained Markov chains. 
 The main constraint of the Markov chains is that two words following each other will have the same sequence of part-of-speech (POS) as the corpus.
-POS is a concept within NLG that divides a text into the different linguistical categories of the words within it.
+POS is a concept within NLG that divides a text into the different linguistic categories of the words within it.
 
 The aim is to show that using this constraint on the Markov chain, sentences will have a greater diversity but still be as semantically correct as just using a n-gram.
-Since the problem with larger n:s within n-grams is that text is copied straight from the corpus, 
+Since the problem with larger n's within n-grams is that text is copied straight from the corpus, 
 the constraint will hopefully help us create semantically correct sentences with a greater diversity from the corpus.
 
 To be able to show differences in these two approaches tweets are generated for a specific person.
-This paper builds upon the work by \cite{shannon48} for the theory of implementing an n-gram, a description on generating and parsing corpuses by \citep{Corpus}
-and the work by \citealp{McBarb} to implement constraints on the n-gram.
+This paper builds upon the work by \cite{shannon48} for the theory of implementing an n-gram, a description on generating and parsing corpuses by \cite{Corpus}
+and the work by \cite{McBarb} to implement constraints on the n-gram.
    
 \subsection{Contribution}
 
 In order to observe the difference in the result a bi-gram of POS is implemented on to a tri-gram. 
-As mentioned above a problem with n-grams with too high \textit{n:s} is that parts of the corpus is copied if said corpus does not contain a large variation of similar sentences, 
-so that a given start of \textit{n} words does not automatically lead to one sentence finish. i.e. a larger corpus is needed for larger \textit{n:s}.
-To be able to keep a smaller and diverse corpus the bi-gram of POS tags is applied on top of the n-gram to allow the program to select words of a common word type order and with a greater diversity than naturally occurs in the corpus.
+As mentioned above, a problem with n-grams with too high \textit{n's} is that parts of the corpus is copied if it does not contain a large variation of similar sentences.  
+A large corpus with a larger sentence variation would not have this problem since any given sentence would have several different outcomes.
+To be able to keep a smaller and diverse corpus the bi-gram of POS tags is applied on top of the n-gram to allow the program to select words of a common word type order and with a greater diversity than which naturally occurs in the corpus.
 
-This paper's main contribution to the field is that it evaluates putting said bi-gram constraint upon the regular Markov chain and doing it for short message generation.
-The research area this paper is based on focus on generating text that fits a theme or rhythm whereas the concept is generalized by creating text that is not constrained by a pre-written sequence of POS. 
+This paper's main contribution to the field is that it evaluates putting the bi-gram constraint upon the regular Markov chain for short message generation.
+The research area this paper is based on focus on generating text that fits a theme or rhythm, whereas the concept is generalized by creating text that is not constrained by a pre-written sequence of POS. 
 The approach is that the model is trained with two types of information, thus the contribution to the field lies in examining how the combination of these two approaches improves the general natural language generation.
 
 \subsection{Outline}
-It is explained how \citep{shannon48}, \citep{Corpus} and \cite{McBarb} use NLG in section~\ref{sec:relwork} and also explained how that research has affected this papers. 
+It is explained how \cite{shannon48}, \cite{Corpus} and \cite{McBarb} use NLG in section~\ref{sec:relwork} and also explained how that research has affected this papers. 
 In section~\ref{sec:method} the details on how the algorithm works is explained, 
 examples are also given to explain in detail what the difference between the two methods that are compared. 
-This is complemented with details regarding this paper's specific implementation of the algorithm in section~\ref{sec:impl}. 
-The data from running the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}. Lastly in section~\ref{sec:summary} the results are summarized and it is discussed how the experiments in this paper can be further improved.
+Details regarding this paper's specific implementation of the algorithm can be found in section~\ref{sec:impl}. 
+The data from executing the algorithm is explained, reviewed and evaluated in section~\ref{sec:exps}. In section~\ref{sec:summary} the results are summarized and it is discussed how the experiments in this paper can be further improved.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,14 +120,14 @@ His approach was novel at the time however it is a staple in modern text generat
 In the in-proceedings by \cite{Corpus}, they describe the process of building a corpus for a natural language generation system with different user requests and demands that constrain the corpus. 
 The corpus consists of example output that the NLG will imitate and the user requests should be applied through modifying and simplifying the corpus according to them.
 Since the corpus should consist of example output, and it is text that should imitate tweets that is going to be generated in this paper, the corpus used is populated with tweets.
-We play the role of our own users since we are the ones with demands on the generated text and we need to generate a corpus that is usable by our algorithms. Thus, as \citep{Corpus} describe things from the corpus are removed upon generating it, such as hash-tags and URL:s.
+We play the role of our own users since we are the ones with demands on the generated text and we need to generate a corpus that is usable by our algorithms. Thus, as \cite{Corpus} describe, unwanted content from the corpus are removed upon generating it, such as hash-tags and URL:s.
 
 
-The work on actually constraining the Markov chain is built upon \cite{McBarb} work, 
+The work on actually constraining the Markov chain is built upon the work by \cite{McBarb}, 
 where the authors generated lyrics from different artists using Markov chains with constraints. 
 These were to be generated in a specific style and with a rhythm, to simulate real lyrics from a large span of artists, which is achieved by applying constraints on a tri-gram, a Markov chain of order 2.
 They use POS templates to fit the correct poetic metre, these templates are not generated by their algorithm, but rather handcrafted to get a desirable result.
-The research from their paper was used to be able to apply constraints upon a tri-gram, or rather a Markov chain in general. Similarily this paper utilize a part-of-speech template of sorts, but diverge a bit from their paper by not handcrafting them and instead letting the algorithm generate them based on the corpus.
+The research from their paper was used to be able to apply constraints upon a tri-gram, or rather a Markov chain in general. Similarly this paper utilize a part-of-speech template of sorts, but diverge a bit from their paper by not hand-crafting them and instead letting the algorithm generate them based on the corpus.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,7 +135,7 @@ The research from their paper was used to be able to apply constraints upon a tr
 \section{Our method}
 \label{sec:method}
 Our method that forms the basis of this paper is generating Twitter messages with the use of both Markov chains and constrained Markov chains and to compare the two methods with each other.
-The theory is that constraining an Markov chain will yield better and more diverse text being generated. 
+The theory is that constraining a Markov chain will yield better and more diverse text being generated. 
 In section~\ref{sec:exps} where we explain our experiments and data we use a second order Markov chain, 
 for the sake of explanation we assume a first order Markov chain is used to explain how the method works. 
 In a limited corpus such as the following: \\
@@ -168,7 +169,7 @@ the transitions are only observed with one previous state in consideration.
 
 \subsubsection{Calculating uniqueness}
 \label{subsec:calcuniq}
-Since it is not possible to get a value on the semantic correctness of a sentence programatically a metric is created based on the uniqueness of a generated tweet. The uniqueness is based on how much of the tweet is copied straight from the corpus.
+Since it is not possible to get a value on the semantic correctness of a sentence programmatically a metric is created based on the uniqueness of a generated tweet. The uniqueness is based on how much of the tweet is copied straight from the corpus.
 Because a tri-gram is used, three successive words will always be chosen from the corpus but anything more than that makes it less unique.
 
 For example purposes these sentences are added to the limited corpus mentioned earlier:
@@ -229,12 +230,11 @@ The maximum length of a tweet is 140 characters and 30 is an arbitrarily chosen 
 
 Once generated the tweets are analysed for uniqueness by counting how many of the used words are from the same part of the corpus. However, since a tri-gram is used, three of the words have to appear in succession and thus are only counted if four or more of the words are from the same part of the corpus. This is then divided this by the number of words to get an average for the whole tweet, as described in section~\ref{subsec:calcuniq}.
 
-\newpage
 \subsection{Experiment}
 
 \subsubsection{Uniqueness based on words in tweet}
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
   \hfill
   \begin{center}
   	{\includegraphics[width=300, height = 140]{UniqByNumWordsTweet.png}}
@@ -243,11 +243,11 @@ Once generated the tweets are analysed for uniqueness by counting how many of th
  \end{figure}
  
  Uniqueness drops as the number of words in the tweet increases, both Markov chain and the constrained Markov chain decrease at  approximatively the same rate however. This is because of how the algorithm for uniqueness works, namely that if the tweet has 6 words then at worst it can take all 6 words from the same part of the corpus. This will result in a uniqueness of 50 percent, since this is a worst case scenario, it cannot be lower than this.
- 
- \begin{figure}[h!]
+
+ \begin{figure}[!ht]
    \hfill
    \begin{center}
-  	{\includegraphics[width=280, height = 140]{UniqByNumWordsTweet2.png}}
+  	{\includegraphics[width=240, height = 120]{UniqByNumWordsTweet2.png}}
   \end{center}
   \hfill
   \caption{Uniqueness based on words in tweet (Comparison)}
@@ -258,7 +258,7 @@ Once generated the tweets are analysed for uniqueness by counting how many of th
 
 \subsubsection{Number of tweets based on uniqueness}
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
   \hfill
   {\includegraphics[width=1\linewidth, height = 165]{NumTweetsByUniq.png}}
   \caption{Number of tweets based on uniqueness}
@@ -266,7 +266,7 @@ Once generated the tweets are analysed for uniqueness by counting how many of th
  
  Here too, both the Markov chain and the constrained Markov chain have similar results as a whole but the Markov chain has more tweets with less uniqueness than the constrained Markov chain. The opposite is also true, the constrained Markov chain has more tweets with more uniqueness than the Markov chain.
  
-  \begin{figure}[h!]
+  \begin{figure}[!ht]
    \hfill
   {\includegraphics[width=1\linewidth, height = 165]{NumTweetsByUniq2.png}}
   \hfill
@@ -310,7 +310,7 @@ Otherwise the subjects of the generated tweets all seem to revolve around politi
 
 Based on generated tweets, it can seen that there is similarity of the semantic structure and content for both methods. 
 
-\newpage
+%\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary and Conclusions}
@@ -328,7 +328,11 @@ A lot of the generated tweets had a political theme where conflicts were discuss
 It was shown that applying constraints on a tri-gram made little difference rather than just using a tri-gram. The approach adds a lot of work for small gain, and that the gain results in mostly nonsensical text. When the diversity in the generated tweet increased so did the quality decrease.
 
 % Hur kan våra resultat förbättras/förändras?
-The constrained matrix only uses a bi-gram, if it would use a tri-gram for it's POS constraints, perhaps the outcome would have been different. The outcome would probably be affected by it, however it is hard to say whether it would improve the results a lot. If the Markov chain was constrained by another property than the sequence of POS in Carl's tweets the results could possibly be different. An alternative could be to generate a template with topics that divide the tweet into parts and let that be the constraint of the Markov chain instead.
+The constrained matrix only uses a bi-gram, if it would use a tri-gram for it's POS constraints, perhaps the outcome would have been different. 
+The outcome would probably be affected by it, however it is hard to say whether it would improve the results a lot. 
+A larger corpus would with no doubt improve the generated sentences but it is irrelevant since methods would still perform equally in relation to each other. 
+If the Markov chain was constrained by another property than the sequence of POS in Carl's tweets the results could possibly be different. 
+An alternative could be to generate a template with topics that divide the tweet into parts and let that be the constraint of the Markov chain instead.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
